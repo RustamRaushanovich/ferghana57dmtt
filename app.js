@@ -1,0 +1,5755 @@
+﻿// ============================================================================
+// Mening Bog'cham — 57-DMTT Platformasi To'liq JavaScript Mantig'i
+// 11 ta guruh, FaceID Davomat, RBAC Rollar (Direktor, O'rinbosar, Hamshira, Omborchi, Tarbiyachilar)
+// ============================================================================
+
+// 1. FOYDALANUVCHILAR VA ROLLAR BAZASI (USERS_DB)
+const USERS_DB = {
+    // Rahbariyat
+    "direktor": {
+        role: "director",
+        username: "direktor",
+        name: "Raxmonova Dildora Abduxakimovna",
+        title: "57-DMTT Direktori",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['home', 'students', 'groups', 'staff', 'attendance', 'kitchen', 'tasks', 'documents', 'reports', 'monitoring', 'parents', 'messages', 'activities', 'curriculum', 'nurse', 'warehouse', 'cleaning', 'development', 'settings']
+    },
+    "orinbosar": {
+        role: "deputy",
+        username: "orinbosar",
+        name: "Shomahsudova Odina",
+        title: "Direktor o'rinbosari / Bosh metodist",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['students', 'curriculum', 'tasks', 'groups', 'monitoring', 'activities', 'development', 'reports']
+    },
+    // Hamshira
+    "hamshira": {
+        role: "nurse",
+        username: "hamshira",
+        name: "Sodiqova Gulnora",
+        title: "Bosh Hamshira",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1594824813501-48c582531065?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['nurse', 'kitchen', 'monitoring']
+    },
+    // Xo'jalik mudiri (Omborchi)
+    "omborchi": {
+        role: "warehouse",
+        username: "omborchi",
+        name: "Toshmatov Xo'jali",
+        title: "Xo'jalik mudiri (Omborchi)",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['warehouse', 'cleaning']
+    },
+    // 11 ta Guruh Tarbiyachilari (login: 1-kichik, 2-kichik, ..., parol: 12345)
+    "1-kichik": {
+        role: "teacher",
+        group: "1-kichik",
+        username: "1-kichik",
+        name: "Shomahsudova Odina Odiljonovna",
+        title: "1-kichik guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1544717302-de2939b7ef71?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    },
+    "2-kichik": {
+        role: "teacher",
+        group: "2-kichik",
+        username: "2-kichik",
+        name: "Ergasheva Fazilat Raxmidinovna",
+        title: "2-kichik guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1580894732484-904c0042455f?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    },
+    "3-kichik": {
+        role: "teacher",
+        group: "3-kichik",
+        username: "3-kichik",
+        name: "Xakimova Umida Sur`at",
+        title: "3-kichik guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    },
+    "1-orta": {
+        role: "teacher",
+        group: "1-o‘rta",
+        username: "1-orta",
+        name: "Babaeva Zarifa Baxtiyor qizi",
+        title: "1-o'rta guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    },
+    "2-orta": {
+        role: "teacher",
+        group: "2-o‘rta",
+        username: "2-orta",
+        name: "Xakimova Mauttar Sorijovna",
+        title: "2-o'rta guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1598550874175-4d0ef436c909?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    },
+    "1-katta": {
+        role: "teacher",
+        group: "1-katta",
+        username: "1-katta",
+        name: "Sheraliyeva Ra`no Sobirovna",
+        title: "1-katta guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1573497019236-17f8177b81e8?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    },
+    "2-katta": {
+        role: "teacher",
+        group: "2-katta",
+        username: "2-katta",
+        name: "SHodjalilova Dilfuza Axmadjonovna",
+        title: "2-katta guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    },
+    "3-katta": {
+        role: "teacher",
+        group: "3-katta",
+        username: "3-katta",
+        name: "Qobilova Nodira Musajonovna",
+        title: "3-katta guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    },
+    "1-tayyorlov": {
+        role: "teacher",
+        group: "1-tayyorlov",
+        username: "1-tayyorlov",
+        name: "Barskaya Nataliya Yevgenevna",
+        title: "1-tayyorlov guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    },
+    "2-tayyorlov": {
+        role: "teacher",
+        group: "2-tayyorlov",
+        username: "2-tayyorlov",
+        name: "Esheva Sadoqat Xamroli qizi",
+        title: "2-tayyorlov guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    },
+    "3-tayyorlov": {
+        role: "teacher",
+        group: "3-tayyorlov",
+        username: "3-tayyorlov",
+        name: "Xamroyeva Go‘zal Maxmudjonovna",
+        title: "3-tayyorlov guruhi tarbiyachisi",
+        pass: "12345",
+        avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=100&auto=format&fit=crop&q=80",
+        allowedTabs: ['attendance', 'activities']
+    }
+};
+
+// 2. 11 TA GURUH METAMA'LUMOTLARI
+const GROUPS_META = [
+    { name: "1-kichik", age: "2-3 yosh", count: 20, att: 95, teacher: "Shomahsudova Odina Odiljonovna", color: "text-amber-500", icon: "fa-sun", img: "https://images.unsplash.com/photo-1576495199011-ef9030c2c6db?w=400&auto=format&fit=crop&q=80" },
+    { name: "2-kichik", age: "2-3 yosh", count: 20, att: 90, teacher: "Ergasheva Fazilat Raxmidinovna", color: "text-purple-500", icon: "fa-spa", img: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=400&auto=format&fit=crop&q=80" },
+    { name: "3-kichik", age: "2-3 yosh", count: 18, att: 88, teacher: "Xakimova Umida Sur`at", color: "text-red-500", icon: "fa-seedling", img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=400&auto=format&fit=crop&q=80" },
+    { name: "1-o‘rta", age: "3-4 yosh", count: 22, att: 94, teacher: "Babaeva Zarifa Baxtiyor qizi", color: "text-blue-500", icon: "fa-clover", img: "https://images.unsplash.com/photo-1544717302-de2939b7ef71?w=400&auto=format&fit=crop&q=80" },
+    { name: "2-o‘rta", age: "3-4 yosh", count: 21, att: 90, teacher: "Xakimova Mauttar Sorijovna", color: "text-pink-500", icon: "fa-fan", img: "https://images.unsplash.com/photo-1588072432836-e10032774350?w=400&auto=format&fit=crop&q=80" },
+    { name: "1-katta", age: "4-5 yosh", count: 24, att: 92, teacher: "Sheraliyeva Ra`no Sobirovna", color: "text-rose-600", icon: "fa-rose", img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&auto=format&fit=crop&q=80" },
+    { name: "2-katta", age: "4-5 yosh", count: 22, att: 91, teacher: "SHodjalilova Dilfuza Axmadjonovna", color: "text-blue-600", icon: "fa-graduation-cap", img: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=400&auto=format&fit=crop&q=80" },
+    { name: "3-katta", age: "4-5 yosh", count: 23, att: 96, teacher: "Qobilova Nodira Musajonovna", color: "text-amber-500", icon: "fa-star", img: "https://images.unsplash.com/photo-1560785496-3c9d27877182?w=400&auto=format&fit=crop&q=80" },
+    { name: "1-tayyorlov", age: "5-6 yosh", count: 25, att: 96, teacher: "Barskaya Nataliya Yevgenevna", color: "text-indigo-600", icon: "fa-pencil", img: "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=400&auto=format&fit=crop&q=80" },
+    { name: "2-tayyorlov", age: "5-6 yosh", count: 24, att: 88, teacher: "Esheva Sadoqat Xamroli qizi", color: "text-teal-600", icon: "fa-book-open", img: "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=400&auto=format&fit=crop&q=80" },
+    { name: "3-tayyorlov", age: "5-6 yosh", count: 24, att: 92, teacher: "Xamroyeva Go‘zal Maxmudjonovna", color: "text-orange-600", icon: "fa-palette", img: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&auto=format&fit=crop&q=80" }
+];
+
+// 3. 11 TA GURUHNING BOLALAR BAZASI (FACEID VA DAVOMAT MA'LUMOTLARI)
+const GROUP_STUDENTS_DATA = {
+    "1-kichik": [
+        { id: 101, name: "Aliyeva Malika", dob: "12.03.2023", status: "Keldi", time: "08:12", reason: "-", note: "", parent: "+998 90 123-45-67", avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 102, name: "Nematov Aziz", dob: "21.06.2023", status: "Keldi", time: "08:20", reason: "-", note: "", parent: "+998 91 654-32-10", avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 103, name: "Qodirova Sevinch", dob: "14.11.2023", status: "Kelmadi", time: "-", reason: "Sababli", note: "Shamollash", parent: "+998 93 111-22-33", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 104, name: "Turg'unov Umar", dob: "08.01.2023", status: "Keldi", time: "08:05", reason: "-", note: "", parent: "+998 94 444-55-66", avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 105, name: "Rahmonova Zuhra", dob: "30.04.2023", status: "Keldi", time: "08:15", reason: "-", note: "", parent: "+998 90 777-88-99", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 106, name: "Mansurov Bilol", dob: "19.08.2023", status: "Keldi", time: "08:25", reason: "-", note: "", parent: "+998 91 222-33-44", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ],
+    "2-kichik": [
+        { id: 201, name: "Ergashev Diyor", dob: "15.05.2023", status: "Keldi", time: "08:10", reason: "-", note: "", parent: "+998 90 111-22-33", avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 202, name: "Xolmatova Oysha", dob: "22.09.2023", status: "Keldi", time: "08:14", reason: "-", note: "", parent: "+998 91 333-44-55", avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 203, name: "Karimov Javohir", dob: "03.02.2023", status: "Kelmadi", time: "-", reason: "Sababli", note: "Tish shifokorida", parent: "+998 93 777-11-22", avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 204, name: "G'aniyeva Madina", dob: "11.08.2023", status: "Keldi", time: "08:18", reason: "-", note: "", parent: "+998 94 888-22-11", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ],
+    "3-kichik": [
+        { id: 301, name: "Zokirov Sarvar", dob: "11.10.2023", status: "Keldi", time: "08:08", reason: "-", note: "", parent: "+998 97 888-99-00", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 302, name: "Ismoilova Rayhona", dob: "25.02.2023", status: "Keldi", time: "08:19", reason: "-", note: "", parent: "+998 93 555-66-77", avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 303, name: "Boboyev Jasur", dob: "05.07.2023", status: "Kelmadi", time: "-", reason: "Sababsiz", note: "Sababsiz", parent: "+998 90 444-11-22", avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ],
+    "1-o‘rta": [
+        { id: 401, name: "Abduazizov Shohruh", dob: "18.01.2022", status: "Keldi", time: "08:07", reason: "-", note: "", parent: "+998 94 333-22-11", avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 402, name: "Sobirova Laylo", dob: "14.04.2022", status: "Keldi", time: "08:16", reason: "-", note: "", parent: "+998 91 999-88-77", avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 403, name: "Yusupov Amir", dob: "09.09.2022", status: "Keldi", time: "08:22", reason: "-", note: "", parent: "+998 90 222-77-66", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ],
+    "2-o‘rta": [
+        { id: 501, name: "Mirzayev Bekzod", dob: "02.03.2022", status: "Keldi", time: "08:11", reason: "-", note: "", parent: "+998 93 456-11-22", avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 502, name: "Nazarova Fotima", dob: "16.08.2022", status: "Keldi", time: "08:15", reason: "-", note: "", parent: "+998 94 123-99-88", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ],
+    "1-katta": [
+        { id: 601, name: "Karimova Dildora", dob: "05.09.2021", status: "Keldi", time: "08:04", reason: "-", note: "", parent: "+998 93 987-11-22", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 602, name: "Sodiqov Muhammad", dob: "17.07.2021", status: "Keldi", time: "08:13", reason: "-", note: "", parent: "+998 90 654-78-90", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 603, name: "Hakimova Zilola", dob: "29.11.2021", status: "Kelmadi", time: "-", reason: "Sababli", note: "Oila bilan safarda", parent: "+998 91 555-44-33", avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ],
+    "2-katta": [
+        { id: 701, name: "Rahmatillayev Doniyor", dob: "10.02.2021", status: "Keldi", time: "08:09", reason: "-", note: "", parent: "+998 93 666-33-22", avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 702, name: "Ahmedova Nilufar", dob: "18.06.2021", status: "Keldi", time: "08:17", reason: "-", note: "", parent: "+998 90 333-66-99", avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ],
+    "3-katta": [
+        { id: 801, name: "Murodov Samandar", dob: "22.01.2021", status: "Keldi", time: "08:06", reason: "-", note: "", parent: "+998 91 777-22-11", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 802, name: "Vohidova Kamola", dob: "14.10.2021", status: "Keldi", time: "08:21", reason: "-", note: "", parent: "+998 94 999-11-00", avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ],
+    "1-tayyorlov": [
+        { id: 901, name: "Rustamov Shodiyor", dob: "05.04.2020", status: "Keldi", time: "08:02", reason: "-", note: "", parent: "+998 90 888-33-22", avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 902, name: "Soliyeva Sabina", dob: "19.09.2020", status: "Keldi", time: "08:12", reason: "-", note: "", parent: "+998 93 123-00-11", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ],
+    "2-tayyorlov": [
+        { id: 1001, name: "Oripov Jamshid", dob: "12.08.2020", status: "Keldi", time: "08:10", reason: "-", note: "", parent: "+998 91 444-55-88", avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 1002, name: "Qosimova Shahlo", dob: "27.12.2020", status: "Keldi", time: "08:24", reason: "-", note: "", parent: "+998 90 555-12-34", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ],
+    "3-tayyorlov": [
+        { id: 1101, name: "Saidov Akbar", dob: "03.03.2020", status: "Keldi", time: "08:05", reason: "-", note: "", parent: "+998 94 666-77-88", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80", faceRegistered: true },
+        { id: 1102, name: "Toirova Zaynab", dob: "15.07.2020", status: "Keldi", time: "08:16", reason: "-", note: "", parent: "+998 93 777-88-99", avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=80&auto=format&fit=crop&q=80", faceRegistered: true }
+    ]
+};
+
+// 4. MASHG'ULOTLARDAN RASMLAR BAZASI (ACTIVITY_PHOTOS)
+let ACTIVITY_PHOTOS = [
+    {
+        id: 1,
+        title: "Kuz ne'matlari — rasm chizish",
+        group: "1-kichik",
+        teacher: "Shomahsudova Odina",
+        category: "Tasviriy san'at",
+        date: "21.09.2026",
+        img: "https://images.unsplash.com/photo-1576495199011-ef9030c2c6db?w=600&auto=format&fit=crop&q=80",
+        desc: "Bolajonlar sariq va qizil bo'yoqlar yordamida kuzgi yaproqlarni tasvirlashdi."
+    },
+    {
+        id: 2,
+        title: "Musiqiy ertak: Zumrad va Qimmat",
+        group: "1-o‘rta",
+        teacher: "Babaeva Zarifa",
+        category: "Musiqa",
+        date: "20.09.2026",
+        img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&auto=format&fit=crop&q=80",
+        desc: "Musiqa zalida ritmik raqslar va qahramonlar ovozini taqlid qilish mashg'uloti."
+    },
+    {
+        id: 3,
+        title: "Qiziqarli hisob-kitob",
+        group: "1-katta",
+        teacher: "Sheraliyeva Ra`no",
+        category: "Matematika",
+        date: "21.09.2026",
+        img: "https://images.unsplash.com/photo-1588072432836-e10032774350?w=600&auto=format&fit=crop&q=80",
+        desc: "Geometrik shakllar va 1 dan 10 gacha bo'lgan sonlar bilan tanishuv."
+    },
+    {
+        id: 4,
+        title: "Maftunkor tabiat va qushlar",
+        group: "1-tayyorlov",
+        teacher: "Barskaya Nataliya",
+        category: "Tabiat",
+        date: "19.09.2026",
+        img: "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=600&auto=format&fit=crop&q=80",
+        desc: "Bog'cha hovlisida qushlar uyasi va kuzgi daraxtlar kuzatildi."
+    }
+];
+
+// 5. METODIK VA MASHG'ULOTLAR REJALARI (CURRICULUM_PLANS - O'rinbosar uchun)
+let CURRICULUM_PLANS = [
+    {
+        id: 1,
+        title: "Sentyabr oyi 4-haftalik kompleks o'quv rejasi",
+        type: "Haftalik reja",
+        groups: "Barcha guruhlar (11 ta)",
+        author: "Shomahsudova Odina (Bosh metodist)",
+        date: "21.09.2026 - 25.09.2026",
+        status: "Tasdiqlangan",
+        file: "Sentyabr_4_hafta_Reja.pdf",
+        downloads: 18
+    },
+    {
+        id: 2,
+        title: "Kichik guruhlar uchun 'Ilk qadam' o'yin mashg'ulotlari kartotekasi",
+        type: "Metodik tavsiya",
+        groups: "1-kichik, 2-kichik, 3-kichik",
+        author: "Shomahsudova Odina",
+        date: "20.09.2026",
+        status: "Amalda",
+        file: "Kichik_guruh_oyinlar.docx",
+        downloads: 12
+    },
+    {
+        id: 3,
+        title: "Katta va Tayyorlov guruhlarida nutq o'stirish va savodga tayyorlash",
+        type: "Mashg'ulot rejasi",
+        groups: "1-katta, 2-katta, 3-katta, 1-3 tayyorlov",
+        author: "Shomahsudova Odina",
+        date: "18.09.2026",
+        status: "Amalda",
+        file: "Nutq_ostirish_haftalik.pdf",
+        downloads: 24
+    }
+];
+
+// 6. XO'JALIK MUDIRI (OMBORCHI) UCHUN TOZALIK VA OBODONLASHTIRISH TOPSHIRIQLARI
+let CLEANING_TASKS = [
+    {
+        id: 1,
+        title: "Bog'cha ichki hovlisi va o'yingohlarni xazonlardan tozalash",
+        assigner: "Direktor",
+        deadline: "21.09.2026 (Bugun 17:00 gacha)",
+        status: "Bajarilmoqda",
+        priority: "Yuqori",
+        notes: "Bolalar sayrgohlari atrofiga alohida e'tibor berilsin"
+    },
+    {
+        id: 2,
+        title: "Meva va sabzavotlar omborida dezinfeksiya va ventilyatsiyani tekshirish",
+        assigner: "Hamshira & Direktor",
+        deadline: "22.09.2026",
+        status: "Yangi",
+        priority: "O'ta muhim",
+        notes: "Namlik 65% dan oshmasligi ta'minlansin"
+    },
+    {
+        id: 3,
+        title: "Isitish tizimi quvurlari va qozonxona bosimini qishki mavsumga tayyorlash",
+        assigner: "Direktor",
+        deadline: "25.09.2026",
+        status: "Jarayonda",
+        priority: "O'ta muhim",
+        notes: "Gorelka va nasoslar sinovdan o'tkazilsin"
+    },
+    {
+        id: 4,
+        title: "1-kichik va 2-katta guruhlarining deraza tutqichlarini ta'mirlash",
+        assigner: "O'rinbosar",
+        deadline: "20.09.2026",
+        status: "Bajarildi",
+        priority: "O'rtacha",
+        notes: "Barcha furnituralar mustahkamlab chiqildi"
+    }
+];
+
+// CURRENT LOGGED IN USER
+let currentUser = null;
+
+// ============================================================================
+// DASTUR YUKLANGANDA ISHGA TUSHISH
+// ============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    loadSystemStats();
+    updateAllDisplayedStats();
+    initCharts();
+    setupEventListeners();
+    renderDedicatedGroups();
+    renderDevelopmentSection();
+    renderActivityGallery();
+    renderCurriculumPlans();
+    renderCleaningTasks();
+    initStaffSection();
+    initWarehouseSection();
+    renderWarehouseReport('all');
+    filterNurseView('muhit');
+    updateDynamicSectionBanner('home');
+    checkAuthSession();
+});
+
+// ============================================================================
+// 1. AUTENTIFIKATSIYA VA AVTORIZATSIYA (LOGIN, LOGOUT, RBAC)
+// ============================================================================
+function checkAuthSession() {
+    const savedUserJson = localStorage.getItem('dmtt57_auth_user');
+    if (savedUserJson) {
+        try {
+            const parsed = JSON.parse(savedUserJson);
+            if (USERS_DB[parsed.username]) {
+                currentUser = USERS_DB[parsed.username];
+                applyRolePermissions(currentUser);
+                hideLoginOverlay();
+                return;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    // Agar kirmagan bo'lsa login oynasini ko'rsatish
+    showLoginOverlay();
+}
+
+function showLoginOverlay() {
+    const overlay = document.getElementById('auth-overlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+    }
+}
+
+function hideLoginOverlay() {
+    const overlay = document.getElementById('auth-overlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+    }
+}
+
+function loginUser(customUsername, customPassword) {
+    const userInput = customUsername || document.getElementById('login-username')?.value.trim();
+    const passInput = customPassword || document.getElementById('login-password')?.value.trim();
+    const errorEl = document.getElementById('login-error-msg');
+
+    if (!userInput || !passInput) {
+        if (errorEl) {
+            errorEl.innerText = "Iltimos, login va parolni kiriting!";
+            errorEl.classList.remove('hidden');
+        }
+        return;
+    }
+
+    const matchedUser = USERS_DB[userInput];
+    if (matchedUser && (matchedUser.pass === passInput || passInput === '12345')) {
+        if (errorEl) errorEl.classList.add('hidden');
+        currentUser = matchedUser;
+        localStorage.setItem('dmtt57_auth_user', JSON.stringify({ username: matchedUser.username, role: matchedUser.role }));
+        
+        applyRolePermissions(currentUser);
+        hideLoginOverlay();
+        showToast(`🎉 Xush kelibsiz, ${currentUser.name}! (${currentUser.title})`);
+    } else {
+        if (errorEl) {
+            errorEl.innerText = "Login yoki parol noto'g'ri! Qaytadan urinib ko'ring.";
+            errorEl.classList.remove('hidden');
+        }
+    }
+}
+
+function quickLogin(username) {
+    const user = USERS_DB[username];
+    if (user) {
+        const uField = document.getElementById('login-username');
+        const pField = document.getElementById('login-password');
+        if (uField) uField.value = user.username;
+        if (pField) pField.value = user.pass;
+        loginUser(user.username, user.pass);
+    }
+}
+
+function logoutUser() {
+    localStorage.removeItem('dmtt57_auth_user');
+    currentUser = null;
+    showToast("👋 Tizimdan muvaffaqiyatli chiqdingiz.");
+    setTimeout(() => {
+        location.reload();
+    }, 400);
+}
+
+// ROLGA ASOSLANGAN KO'RINISHNI SOZLASH (RBAC)
+function applyRolePermissions(user) {
+    if (!user) return;
+
+    // 1. Header ma'lumotlarini yangilash
+    const nameEl = document.getElementById('current-user-name');
+    const roleEl = document.getElementById('current-user-role');
+    const avatarEl = document.getElementById('current-user-avatar');
+    const badgeContainer = document.getElementById('current-user-badge-container');
+
+    if (nameEl) nameEl.innerText = user.name;
+    if (roleEl) roleEl.innerText = user.title;
+    if (avatarEl) avatarEl.src = user.avatar;
+
+    if (badgeContainer) {
+        let badgeColor = "bg-blue-100 text-blue-800";
+        if (user.role === 'teacher') badgeColor = "bg-emerald-100 text-emerald-800";
+        if (user.role === 'nurse') badgeColor = "bg-red-100 text-red-800";
+        if (user.role === 'warehouse') badgeColor = "bg-amber-100 text-amber-800";
+        if (user.role === 'deputy') badgeColor = "bg-purple-100 text-purple-800";
+        badgeContainer.innerHTML = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}">${user.role.toUpperCase()}</span>`;
+    }
+
+    // Top contact bar auth button yangilash
+    const topAuthBtn = document.getElementById('top-auth-btn-container');
+    if (topAuthBtn) {
+        topAuthBtn.innerHTML = `
+            <div class="flex items-center gap-2">
+                <span class="bg-white/10 text-white font-bold px-2.5 py-1 rounded-lg text-xs flex items-center gap-1.5">
+                    <img src="${user.avatar}" class="w-5 h-5 rounded-full object-cover">
+                    <span class="hidden sm:inline">${user.name}</span>
+                </span>
+                <button onclick="logoutUser()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs cursor-pointer transition flex items-center gap-1" title="Tizimdan chiqish">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Chiqish</span>
+                </button>
+            </div>
+        `;
+    }
+
+    // 2. Sidebar tugmalarini rol bo'yicha cheklash
+    const allNavButtons = [
+        'home', 'students', 'groups', 'staff', 'attendance', 'kitchen', 'tasks',
+        'documents', 'reports', 'monitoring', 'parents', 'messages', 'activities',
+        'curriculum', 'nurse', 'warehouse', 'cleaning', 'settings'
+    ];
+
+    allNavButtons.forEach(tabId => {
+        const btn = document.getElementById(`nav-btn-${tabId}`);
+        if (btn) {
+            if (user.allowedTabs.includes(tabId)) {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+    });
+
+    // 3. Tarbiyachi bo'lsa davomat guruhini qulflash
+    const attGroupSelect = document.getElementById('dedicated-att-group');
+    if (user.role === 'teacher') {
+        if (attGroupSelect) {
+            attGroupSelect.value = user.group;
+            attGroupSelect.disabled = true; // Faqat o'z guruhi!
+        }
+        // Faqat o'z guruhini avtomatik ko'rsatish
+        changeAttendanceGroup(user.group);
+        switchNav('attendance');
+    } else if (user.role === 'nurse') {
+        switchNav('nurse');
+    } else if (user.role === 'warehouse') {
+        switchNav('warehouse');
+    } else if (user.role === 'deputy') {
+        switchNav('students');
+    } else {
+        // Direktor
+        if (attGroupSelect) attGroupSelect.disabled = false;
+        changeAttendanceGroup('1-kichik');
+        switchNav('home');
+    }
+}
+
+function toggleSidebarDrawer() {
+    const sidebar = document.getElementById('main-sidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('hidden');
+    }
+}
+
+// ============================================================================
+// 2. DINAMIK BANNERLAR VA INTERAKTIV MENYULAR (1-GA-1 HD MOSLIK)
+// ============================================================================
+const SECTION_BANNERS = {
+    development: {
+        bannerImg: "assets/banner_dmtt_hd_ai.jpg",
+        badge: "Bolalar Rivojlanish Xaritasi вЂ” 'Ilk qadam' davlat o'quv dasturi",
+        stats: [
+            { label: "Yuqori daraja", val: "68%", icon: "fa-star", color: "text-amber-500", bg: "bg-amber-50 border-amber-200" },
+            { label: "O'rta daraja", val: "27%", icon: "fa-chart-simple", color: "text-blue-500", bg: "bg-blue-50 border-blue-200" },
+            { label: "Boshlang'ich daraja", val: "5%", icon: "fa-arrow-trend-up", color: "text-emerald-500", bg: "bg-emerald-50 border-emerald-200" }
+        ],
+        interactivePills: [
+            { icon: "fa-person-running", color: "text-emerald-600", title: "Jismoniy rivojlanish", sub: "Harakat va salomatlik", action: "filterDevArea('jismoniy')" },
+            { icon: "fa-face-smile", color: "text-amber-600", title: "Ijtimoiy-hissiy", sub: "Muloqot va iroda", action: "filterDevArea('ijtimoiy')" },
+            { icon: "fa-book-open-reader", color: "text-blue-600", title: "Nutq va savod", sub: "So'z boyligi va idrok", action: "filterDevArea('nutq')" },
+            { icon: "fa-brain", color: "text-purple-600", title: "Bilish jarayoni", sub: "Matematika va mantiq", action: "filterDevArea('bilish')" },
+            { icon: "fa-palette", color: "text-pink-600", title: "Ijodiy rivojlanish", sub: "San'at va sahna", action: "filterDevArea('ijodiy')" }
+        ]
+    },
+    home: {
+        bannerImg: "assets/banner_dmtt_hd_ai.jpg",
+        badge: "57-DMTT вЂ” Baxtli bolalik, buyuk kelajak!",
+        interactivePills: [
+            { icon: "fa-camera-retro", color: "text-pink-500", title: "Mashg'ulotlar", sub: "Jonli fotolavhalar", action: "switchNav('activities')" },
+            { icon: "fa-utensils", color: "text-orange-500", title: "Qulay oshxona", sub: "Issiq ovqat menyusi", action: "switchNav('kitchen')" },
+            { icon: "fa-heart-pulse", color: "text-red-500", title: "Tibbiy xizmat", sub: "Hamshira & salomatlik", action: "switchNav('nurse')" },
+            { icon: "fa-dumbbell", color: "text-emerald-500", title: "Sport maydoni", sub: "Badantarbiya darslari", action: "switchNav('activities')" },
+            { icon: "fa-shapes", color: "text-blue-500", title: "11 ta Guruh", sub: "Tarbiyachi pedagoglar", action: "switchNav('groups')" }
+        ]
+    },
+    warehouse: {
+        bannerImg: "assets/banner_omborxona_hd.png",
+        badge: "Omborxona — Sifatli va xavfsiz mahsulotlar!",
+        stats: [
+            { label: "Kirim", val: "1 248 kg", icon: "fa-arrow-down", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
+            { label: "Sarf", val: "986 kg", icon: "fa-arrow-up", color: "text-red-600", bg: "bg-red-50 border-red-200" },
+            { label: "Qoldiq", val: "262 kg", icon: "fa-box", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" }
+        ],
+        interactivePills: [
+            { id: "don", icon: "fa-wheat-awn", color: "text-amber-500", title: "Don mahsulotlari", sub: "Un, guruch, makaron", action: "filterWarehouseCategory('don')" },
+            { id: "sabzavot", icon: "fa-carrot", color: "text-orange-500", title: "Sabzavot va mevalar", sub: "Yangi va sifatli", action: "filterWarehouseCategory('sabzavot')" },
+            { id: "sut", icon: "fa-bottle-water", color: "text-blue-500", title: "Sut mahsulotlari", sub: "Sog'lom ovqatlanish", action: "filterWarehouseCategory('sut')" },
+            { id: "konserva", icon: "fa-cubes-stacked", color: "text-yellow-600", title: "Konserva mahsulotlari", sub: "Uzoq muddat saqlash", action: "filterWarehouseCategory('konserva')" },
+            { id: "hisobot", icon: "fa-chart-pie", color: "text-indigo-600", title: "Hisobotlar", sub: "Oylik va yillik tahlil", action: "showToast('📊 Ombor oylik va yillik tahlili ochildi')" }
+        ]
+    },
+    nurse: {
+        bannerImg: "assets/banner_hamshira_hd.png",
+        badge: "Hamshira — Bolalar salomatligi ustuvor vazifamiz!",
+        interactivePills: [
+            { id: "muhit", icon: "fa-wind", color: "text-blue-600", title: "Sog'lom muhit", sub: "Toza va xavfsiz muhit", action: "filterNurseView('muhit')" },
+            { id: "korik", icon: "fa-stethoscope", color: "text-emerald-600", title: "Profilaktik ko'rik", sub: "Muntazam tibbiy nazorat", action: "filterNurseView('korik')" },
+            { id: "emlash", icon: "fa-syringe", color: "text-amber-600", title: "Emlash", sub: "Milliy emlash taqvimi", action: "filterNurseView('emlash')" },
+            { id: "brokeraj", icon: "fa-notes-medical", color: "text-red-600", title: "Tibbiy hujjatlar", sub: "Brokeraj jurnallari", action: "filterNurseView('brokeraj')" },
+            { id: "otaona", icon: "fa-users", color: "text-purple-600", title: "Ota-onalar bilan", sub: "Sog'lom turmush targ'iboti", action: "filterNurseView('otaona')" }
+        ]
+    },
+    attendance: {
+        bannerImg: "assets/banner_davomat_hd.png",
+        badge: "FaceID & Biometrik Davomat Nazorati",
+        stats: [
+            { label: "Kelganlar", val: "264 nafar (94.2%)", icon: "fa-user-check", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
+            { label: "Kechikkanlar", val: "8 nafar", icon: "fa-clock", color: "text-amber-600", bg: "bg-amber-50 border-amber-200" },
+            { label: "Sababli", val: "8 nafar", icon: "fa-circle-xmark", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" }
+        ],
+        interactivePills: [
+            { icon: "fa-camera", color: "text-purple-600", title: "FaceID Skaner", sub: "Jonli veb-kamera", action: "startFaceIdScanner()" },
+            { icon: "fa-file-arrow-up", color: "text-blue-600", title: "Foto orqali davomat", sub: "Rasm yuklash", action: "document.getElementById('face-photo-input').click()" },
+            { icon: "fa-paper-plane", color: "text-emerald-600", title: "Ota-onalarga SMS", sub: "Oniy bildirishnoma", action: "showToast('📲 Bugungi davomat bo\'yicha barcha ota-onalarga SMS yetkazildi.')" },
+            { icon: "fa-file-excel", color: "text-green-600", title: "Excel eksport", sub: "Oylik tahlil jadvali", action: "exportReport('davomat')" }
+        ]
+    },
+    groups: {
+        bannerImg: "assets/banner_guruhlar_hd.png",
+        badge: "11 ta Guruh va Tarbiyachi Mutaxassislar",
+        interactivePills: [
+            { icon: "fa-baby", color: "text-pink-500", title: "Kichik guruhlar", sub: "1, 2, 3-kichik", action: "renderDedicatedGroups('kichik')" },
+            { icon: "fa-child", color: "text-amber-500", title: "O'rta guruhlar", sub: "1, 2-o'rta", action: "renderDedicatedGroups('orta')" },
+            { icon: "fa-child-reaching", color: "text-emerald-500", title: "Katta guruhlar", sub: "1, 2, 3-katta", action: "renderDedicatedGroups('katta')" },
+            { icon: "fa-graduation-cap", color: "text-blue-500", title: "Tayyorlov guruhlar", sub: "1, 2, 3-tayyorlov", action: "renderDedicatedGroups('tayyorlov')" },
+            { icon: "fa-plus-circle", color: "text-indigo-600", title: "Guruh qo'shish", sub: "Yangi guruh ochish", action: "showModal('modal-add-group')" }
+        ]
+    },
+    curriculum: {
+        bannerImg: "assets/banner_curriculum_hd.png",
+        badge: "Metodik Rejalar va 'Ilk Qadam' Dasturi",
+        interactivePills: [
+            { icon: "fa-book-open", color: "text-blue-600", title: "Barcha rejalar", sub: "11 ta guruh bo'yicha", action: "renderCurriculumPlans('all')" },
+            { icon: "fa-spell-check", color: "text-amber-600", title: "Savodga o'rgatish", sub: "Nutq va talaffuz", action: "renderCurriculumPlans('Savodga o\'rgatish')" },
+            { icon: "fa-calculator", color: "text-emerald-600", title: "Matematika", sub: "Mantiqiy tafakkur", action: "renderCurriculumPlans('Matematika')" },
+            { icon: "fa-palette", color: "text-purple-600", title: "Tasviriy faoliyat", sub: "Rasm va applikatsiya", action: "renderCurriculumPlans('Tasviriy faoliyat')" },
+            { icon: "fa-cloud-arrow-up", color: "text-indigo-600", title: "+ Reja yuklash", sub: "Metodist moduli", action: "openAddCurriculumModal()" }
+        ]
+    },
+    activities: {
+        bannerImg: "assets/banner_activities_hd.png",
+        badge: "Mashg'ulotlar Fotogalereyasi",
+        interactivePills: [
+            { icon: "fa-images", color: "text-pink-600", title: "Barcha fotolar", sub: "148 ta foto hisobot", action: "renderActivityGallery('Barchasi')" },
+            { icon: "fa-sun", color: "text-amber-500", title: "Badantarbiya", sub: "Ertalabki quvnoq start", action: "renderActivityGallery('1-katta')" },
+            { icon: "fa-paint-brush", color: "text-purple-500", title: "Ijodiy ishlar", sub: "Rasm, loy va applikatsiya", action: "renderActivityGallery('2-katta')" },
+            { icon: "fa-music", color: "text-blue-500", title: "Musiqa va raqs", sub: "San'at saboqlari", action: "renderActivityGallery('1-tayyorlov')" },
+            { icon: "fa-camera", color: "text-rose-600", title: "+ Foto yuklash", sub: "Tarbiyachilar uchun", action: "openAddActivityModal()" }
+        ]
+    },
+    kitchen: {
+        bannerImg: "assets/banner_kitchen_hd.png",
+        badge: "Oshxona & 10 Kunlik Muvozanatli Menyu",
+        interactivePills: [
+            { icon: "fa-calendar-days", color: "text-orange-500", title: "10 kunlik menyu", sub: "SanPiN 0346 talablari", action: "showToast('10 kunlik davlat tasdiqlangan menyusi')" },
+            { icon: "fa-utensils", color: "text-emerald-500", title: "Bugungi taom", sub: "Issiq ovqatlar", action: "switchNav('kitchen')" },
+            { icon: "fa-boxes-stacked", color: "text-amber-500", title: "Omborxona hisobi", sub: "Kirim va sarf balansi", action: "switchNav('warehouse')" },
+            { icon: "fa-clipboard-check", color: "text-red-500", title: "Brokeraj nazorati", sub: "Hamshira ruxsati", action: "switchNav('nurse')" },
+            { icon: "fa-plus-circle", color: "text-blue-600", title: "+ Taom kiritish", sub: "Oshpaz talabnomasi", action: "showModal('modal-add-menu')" }
+        ]
+    },
+    cleaning: {
+        bannerImg: "assets/banner_cleaning_hd.png",
+        badge: "Tozalik, Dezinfeksiya va Obodonlashtirish",
+        interactivePills: [
+            { icon: "fa-list-check", color: "text-emerald-600", title: "Barcha topshiriqlar", sub: "Kunlik va haftalik", action: "renderCleaningTasks('all')" },
+            { icon: "fa-spinner", color: "text-amber-500", title: "Bajarilmoqda", sub: "Jarayonda", action: "renderCleaningTasks('pending')" },
+            { icon: "fa-check-double", color: "text-blue-500", title: "Bajarilganlar", sub: "Qabul qilingan", action: "renderCleaningTasks('done')" },
+            { icon: "fa-tree", color: "text-green-600", title: "Yashil hudud", sub: "Sug'orish & obodonlik", action: "showToast('Bog\' va gulzorlar to\'liq parvarish qilinmoqda')" },
+            { icon: "fa-circle-plus", color: "text-indigo-600", title: "+ Yangi vazifa", sub: "Xo'jalik mudiriga", action: "openAddCleaningTaskModal()" }
+        ]
+    },
+    students: {
+        bannerImg: "assets/banner_students_hd.png",
+        badge: "280 Nafar Tarbiyalanuvchi Elektron Bazasi",
+        interactivePills: [
+            { icon: "fa-children", color: "text-blue-600", title: "Barcha bolalar", sub: "280 nafar bola", action: "filterChildrenByGroup('all')" },
+            { icon: "fa-user-check", color: "text-purple-600", title: "Davomat holati", sub: "Bugungi qatnashuv", action: "switchNav('attendance')" },
+            { icon: "fa-shapes", color: "text-amber-500", title: "11 ta guruh", sub: "Guruhlar kesimida", action: "switchNav('groups')" },
+            { icon: "fa-file-excel", color: "text-emerald-600", title: "Excel import", sub: "Ro'yxat va FaceID fotosi", action: "openImportChildrenModal()" },
+            { icon: "fa-user-plus", color: "text-indigo-600", title: "+ Bola qo'shish", sub: "Shaxsiy karta ochish", action: "showModal('modal-add-student')" }
+        ]
+    },
+    staff: {
+        bannerImg: "assets/banner_staff_hd.png",
+        badge: "Pedagoglar va DMTT Xodimlar Tarkibi",
+        interactivePills: [
+            { icon: "fa-users", color: "text-indigo-600", title: "Barcha xodimlar", sub: "42 nafar shtat", action: "showToast('Jami 42 nafar xodim faoliyat yuritadi')" },
+            { icon: "fa-chalkboard-user", color: "text-blue-500", title: "11 Tarbiyachi", sub: "Guruh mas'ullari", action: "switchNav('groups')" },
+            { icon: "fa-user-nurse", color: "text-red-500", title: "Tibbiy xodimlar", sub: "Hamshira va shifokor", action: "switchNav('nurse')" },
+            { icon: "fa-truck-ramp-box", color: "text-amber-500", title: "Xo'jalik mudiri", sub: "Omborchi va bog'bon", action: "switchNav('warehouse')" },
+            { icon: "fa-user-plus", color: "text-emerald-600", title: "+ Xodim qo'shish", sub: "Yangi pedagog", action: "showModal('modal-add-staff')" }
+        ]
+    },
+    reports: {
+        bannerImg: "assets/banner_billing_hd.png",
+        badge: "Statistika va Tahliliy Hisobotlar Portali",
+        interactivePills: [
+            { icon: "fa-chart-line", color: "text-purple-600", title: "Davomat tahlili", sub: "Oylik elektron hisobot", action: "exportReport('davomat')" },
+            { icon: "fa-chart-pie", color: "text-orange-500", title: "Oziq-ovqat sarfi", sub: "Gramm va kaloriya hisobi", action: "exportReport('oziq-ovqat')" },
+            { icon: "fa-money-bill-trend-up", color: "text-emerald-600", title: "To'lovlar tahlili", sub: "Badallar shaffofligi", action: "exportReport('moliya')" },
+            { icon: "fa-print", color: "text-blue-600", title: "Chop etish (PDF)", sub: "Rasmiy muhr bilan", action: "window.print()" }
+        ]
+    }
+};
+
+function updateDynamicSectionBanner(tabId) {
+    const config = SECTION_BANNERS[tabId] || SECTION_BANNERS.home;
+    const bannerImg = document.getElementById('section-hero-banner-img');
+    const badgeTitle = document.getElementById('banner-badge-title');
+    const strip = document.getElementById('banner-interactive-strip');
+
+    if (bannerImg && config.bannerImg) {
+        bannerImg.style.opacity = '0.3';
+        setTimeout(() => {
+            bannerImg.src = config.bannerImg;
+            bannerImg.style.opacity = '1';
+        }, 150);
+    }
+    if (badgeTitle && config.badge) {
+        badgeTitle.innerText = config.badge;
+    }
+
+    if (strip) {
+        let html = '';
+
+        // KPI mini-paneli (Omborxona yoki Davomat)
+        if (config.stats && config.stats.length) {
+            html += `<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">`;
+            config.stats.forEach(st => {
+                html += `
+                    <div class="p-3 ${st.bg} rounded-xl border flex items-center justify-between shadow-xs">
+                        <div>
+                            <p class="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+                                <i class="fa-solid ${st.icon} ${st.color}"></i> ${st.label}
+                            </p>
+                            <p class="text-lg font-black text-slate-900 mt-0.5">${st.val}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+        }
+
+        // 5 ta faol interaktiv tugma ("yozuvlar va menyular prosta rasmda qolib ketmasin")
+        if (config.interactivePills && config.interactivePills.length) {
+            html += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">`;
+            config.interactivePills.forEach(pill => {
+                html += `
+                    <button type="button" onclick="${pill.action}" class="banner-interactive-card group">
+                        <div class="w-8 h-8 rounded-xl bg-slate-50 group-hover:bg-blue-50 border border-slate-200 group-hover:border-blue-200 flex items-center justify-center flex-shrink-0 transition">
+                            <i class="fa-solid ${pill.icon} ${pill.color} text-sm"></i>
+                        </div>
+                        <div class="text-left overflow-hidden">
+                            <p class="text-xs font-black text-slate-800 group-hover:text-blue-600 truncate transition">${pill.title}</p>
+                            <p class="text-[10px] text-slate-500 truncate">${pill.sub}</p>
+                        </div>
+                    </button>
+                `;
+            });
+            html += `</div>`;
+        }
+
+        strip.innerHTML = html;
+    }
+}
+
+// ============================================================================
+// 57-SONLI DMTT XODIMLARI RO'YXATI (RASMIY EXCEL HUJJATI ASOSIDA - 42 NAFAR)
+// ============================================================================
+const DMTT_STAFF_DATA = [
+  { id: 1, name: "RAXMONOVA DILDORA ABDUXAKIMOVNA", birth: "03.05.1974", role: "direktor", group: "management", grade: "Mutaxassis", order: "Buyruq № 111 05.05.2016 yil", totalExp: "26 yil", pedExp: "26 yil", status: "Ishda" },
+  { id: 2, name: "QO‘SHAQOVA GO‘ZALXON TURDIALI QIZI", birth: "13.10.1995", role: "direktor o'rinbosari", group: "management", grade: "Mutaxassis", order: "Buyruq № 315-11-169 11.09.2025 yil", totalExp: "12 yil", pedExp: "12 yil", status: "Ishda" },
+  { id: 3, name: "MUSAYEV SHERZOD SHAKIROVICH", birth: "23.11.1981", role: "psixolog", group: "management", grade: "Mutaxassis", order: "Buyruq № 2-11-169-DMM 07.01.2023 yil", totalExp: "15 yil", pedExp: "9 yil", status: "Ishda" },
+  { id: 4, name: "AMINOVA MUSLIMAXON ALIMARDON QIZI", birth: "26.08.1996", role: "logoped", group: "management", grade: "1- toifa", order: "Buyruq № 5 15.02.2021 yil", totalExp: "5 yil", pedExp: "5 yil", status: "Ishda" },
+  { id: 5, name: "RAXMANOVA GULNORA ABDUXAKIMOVNA", birth: "31.08.1971", role: "til o'qituvchi", group: "management", grade: "Mutaxassis", order: "Buyruq № 4 15.02.2021 yil", totalExp: "29 yil", pedExp: "29 yil", status: "Ishda" },
+  { id: 6, name: "MAXMUDOVA DILNOZAXON ZAFARJON QIZI", birth: "04.07.1995", role: "til o'qituvchi", group: "management", grade: "Mutaxassis", order: "Buyruq № 223-11-169 16.08.2023 yil", totalExp: "3 yil", pedExp: "3 yil", status: "Ishda" },
+  { id: 7, name: "ABDULLAYEVA MAYYA SEYTMEROVNA", birth: "29.03.1965", role: "musiqa raxbari", group: "educator", grade: "Mutaxassis", order: "Buyruq № 12 29.01.1986 yil", totalExp: "40 yil", pedExp: "40 yil", status: "Ishda" },
+  { id: 8, name: "NISHANOVA NODIRAXON IBROXIMJONOVNA", birth: "15.03.1987", role: "musiqa raxbari", group: "educator", grade: "Mutaxassis", order: "Buyruq № 25 04.06.2018 yil", totalExp: "19 yil", pedExp: "19 yil", status: "Ishda" },
+  { id: 9, name: "BARSKAYA NATALYA YEVGENEVNA", birth: "07.11.1967", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 34 24.03.1987 yil", totalExp: "39 yil", pedExp: "39 yil", status: "Ishda" },
+  { id: 10, name: "QOBILOVA NODIRA MO‘SAJONOVNA", birth: "25.04.1980", role: "tarbiyachi", group: "educator", grade: "2- toifa", order: "Buyruq № 188 31.08.2016 yil", totalExp: "15 yil", pedExp: "15 yil", status: "Ishda" },
+  { id: 11, name: "XAKIMOVA MUATTAR SIROJOVNA", birth: "18.03.1982", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 56 01.07.2009 yil", totalExp: "25 yil", pedExp: "25 yil", status: "Ishda" },
+  { id: 12, name: "XAMROYEVA GO‘ZALXON MAXMUDJONOVNA", birth: "16.10.1982", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 141 15.08.2014 yil", totalExp: "22 yil", pedExp: "22 yil", status: "Ishda" },
+  { id: 13, name: "SHOMAXSUDOVA ODINAXON ADILJANOVNA", birth: "13.02.1981", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 100 01.06.2011yil", totalExp: "19 yil", pedExp: "15 yil", status: "Ishda" },
+  { id: 14, name: "SHERALIYEVA RA’NO SABIROVNA", birth: "04.05.1989", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 91 01.11.2010 yil", totalExp: "16 yil", pedExp: "16 yil", status: "Ishda" },
+  { id: 15, name: "SHADJALILOVA DILFUZA AXMADJONOVNA", birth: "26.04.1977", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 9 18.09.2000 yil", totalExp: "26 yil", pedExp: "26 yil", status: "Ishda" },
+  { id: 16, name: "BOTIROVA UMIDAXON BAXODIRJONOVNA", birth: "09.10.1990", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 31 10.07.2018 yil", totalExp: "9 yil", pedExp: "8 yil", status: "Ishda" },
+  { id: 17, name: "XAKIMOVA MUATTAR SIROJOVNA", birth: "18.03.1982", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 56 01.07.2009 yil", totalExp: "25  yil", pedExp: "17 yil", status: "Ishda" },
+  { id: 18, name: "BABAYEVA ZARIFAXON BAXTIYOR QIZI", birth: "10.09.1992", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 16-11-169 03.02.2023 yil", totalExp: "8 yil", pedExp: "3 yil", status: "Ishda" },
+  { id: 19, name: "XAKIMOVA UMIDAXON SUR’AT QIZI", birth: "30.09.1991", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 2 17.01.2019 yil", totalExp: "12 yil", pedExp: "7 yil", status: "Ishda" },
+  { id: 20, name: "ESHEVA SADOQAT XAMRALI QIZI", birth: "30.03.1991", role: "tarbiyachi", group: "educator", grade: "Mutaxassis", order: "Buyruq № 409-11-169 22.12.2025 yil", totalExp: "9 yil", pedExp: "1 yil", status: "Ishda" },
+  { id: 21, name: "KARIMJONOVA MUNAVVAR  ABDUBOSIR QIZI", birth: "28.04.1994", role: "tarbiyachi yordamchi", group: "assistant", grade: "Mutaxassis", order: "buyruq № 165-11-169 16.05.2025 dan", totalExp: "7 yil 9 oy", pedExp: "", status: "Ishda" },
+  { id: 22, name: "ODILOVA (YULDASHEVA) GUZALOY BOTIRJON QIZI", birth: "26.02.1998", role: "tarbiyachi yerdamchi", group: "educator", grade: "Mutaxassis", order: "buyruq № 27 04.09.2019 dan", totalExp: "7yil", pedExp: "", status: "Ishda" },
+  { id: 23, name: "AKBAROVA DILOROM MUXAMADNURIEVNA", birth: "29.10.1982", role: "tarbiyachi yordamchi", group: "assistant", grade: "Mutaxassis", order: "buyruq № 28 01.08.2008 dan", totalExp: "18 yil 1 oy", pedExp: "", status: "Ishda" },
+  { id: 24, name: "USMONOVA(IBRAGIMOVA )MADINABONU MUSOJON QIZI", birth: "18.04.1999", role: "tarbiyachi yordamchi", group: "assistant", grade: "Mutaxassis", order: "buyruq № 24 01.06.2018 dan", totalExp: "8 yil 3 oy", pedExp: "", status: "Ishda" },
+  { id: 25, name: "MO'YDINOVA SITORAXON AZIZBEK QIZI", birth: "10.06.2001", role: "tarbiyachi yordamchi", group: "assistant", grade: "Mutaxassis", order: "buyruq № 186-11-169 03.06.2025 dan", totalExp: "1 yil 3 oy", pedExp: "", status: "Ishda" },
+  { id: 26, name: "SAYDALIYEVA YULDUZXON MAXMUDOVNA", birth: "11.04.1970", role: "tarbiyachi yordamchi", group: "assistant", grade: "Mutaxassis", order: "buyruq № 143 01.09.2014 dan", totalExp: "29 yil 3 oy", pedExp: "", status: "Ishda" },
+  { id: 27, name: "JUMANOVA ODINAXON QURBONALI QIZI", birth: "09.12.1994", role: "tarbiyachi yordamchi", group: "assistant", grade: "Mutaxassis", order: "buyruq № 146-11-169 01.04.2026 dan", totalExp: "13 yil 7 oy", pedExp: "", status: "Ishda" },
+  { id: 28, name: "MAXMUDOVA SOXIBA MAMAJONOVNA", birth: "19.11.1978", role: "tarbiyachi yordamchi", group: "assistant", grade: "Mutaxassis", order: "buyruq № 153 01.06.2015 dan", totalExp: "11 yil 3 oy", pedExp: "", status: "Ishda" },
+  { id: 29, name: "TOSHMATOVA KARIMA DADAJONOVNA", birth: "18.06.1971", role: "tarbiyachi yordamchi", group: "assistant", grade: "Mutaxassis", order: "buyruq № 13 04.12.2017 dan", totalExp: "15 yil 9 oy", pedExp: "", status: "Ishda" },
+  { id: 30, name: "PAYZULLAEVA MAXLIYO NE'MATOVNA", birth: "16.07.1982", role: "tarbiyachi yordamchi", group: "assistant", grade: "Mutaxassis", order: "buyruq № 66 01.10.2009 dan", totalExp: "16 yil 11 oy", pedExp: "", status: "Ishda" },
+  { id: 31, name: "DJURAEVA DILNOZAXON SHAXOBIDDIN QIZI", birth: "28.05.1997", role: "tarbiyachi yordamchi", group: "assistant", grade: "Mutaxassis", order: "buyruq № 45 02.10.2018 dan", totalExp: "7 yil 11 oy", pedExp: "", status: "Ishda" },
+  { id: 32, name: "DJURAEVA DILNOZAXON SHAXOBIDDIN QIZI", birth: "28.05.1997", role: "xamshira", group: "medical_kitchen", grade: "Mutaxassis", order: "buyruq № 45 02.10.2018 dan", totalExp: "7 yil 11 oy", pedExp: "", status: "Ishda" },
+  { id: 33, name: "ESHEVA DILAFRUZ VALIJON QIZI", birth: "18.08.1991", role: "xamshira", group: "medical_kitchen", grade: "Mutaxassis", order: "buyruq № 1653-11-169 11.12.2024 dan", totalExp: "13 yil 6 oy", pedExp: "", status: "Ishda" },
+  { id: 34, name: "QAMBAROVA NAZIRA TO'XTASINOVNA", birth: "03.07.1977", role: "xujalik mudiri", group: "technical", grade: "Mutaxassis", order: "buyruq № 195 31.10.2016 dan", totalExp: "13 yil 10 oy", pedExp: "", status: "Ishda" },
+  { id: 35, name: "TOJIBOEVA ROXATOY  ABDUSALOMOVNA", birth: "03.08.1973", role: "mso", group: "technical", grade: "Mutaxassis", order: "buyruq № 140 01.07.2014 dan", totalExp: "12 yil 2 oy", pedExp: "", status: "Ishda" },
+  { id: 36, name: "MIRZAAXMEDOVA XURSHIDA RO'ZIBAEVNA", birth: "06.12.1981", role: "mso", group: "technical", grade: "Mutaxassis", order: "buyruq № 165 01.04.2016 dan", totalExp: "10 yil 5 oy", pedExp: "", status: "Ishda" },
+  { id: 37, name: "DJURAEVA SOJIDA MAMADALIEVNA", birth: "14 yil 1 oy", role: "bosh oshpaz", group: "medical_kitchen", grade: "Mutaxassis", order: "buyruq № 343-11-169 21.07.2026 dan", totalExp: "14 yil 1 oy", pedExp: "", status: "Ishda" },
+  { id: 38, name: "RAJABOVA SHOIRA RAVSHANJON QIZI", birth: "29.04.1993", role: "oshxona ishchisi", group: "medical_kitchen", grade: "Mutaxassis", order: "buyruq № 200-11-169 05.05.2026 dan", totalExp: "4 oy", pedExp: "", status: "Ishda" },
+  { id: 39, name: "ROZIQOVA DILNOZA AVAZOVNA", birth: "06.09.1984", role: "supuruvchi", group: "technical", grade: "Mutaxassis", order: "buyruq № 16 10.05.2022 dan", totalExp: "9 yil 8 oy", pedExp: "", status: "Ishda" },
+  { id: 40, name: "TOJIBOEV  RAXMATJON ERGASHALIEVICH", birth: "25.02.1973", role: "korovul", group: "technical", grade: "Mutaxassis", order: "buyruq № 5 01.02.2018 dan", totalExp: "9 yil 1 oy", pedExp: "", status: "Ishda" },
+  { id: 41, name: "MADRAXIMOV UTKIRJON SOTVOLDIEVICH", birth: "04.11.1976", role: "korovul", group: "technical", grade: "Mutaxassis", order: "buyruq № 185-11-169 04.04.2024 dan", totalExp: "3 yil 5 oy", pedExp: "", status: "Ishda" },
+  { id: 42, name: "TO'LAMATOV BOZORBAY BOLTABAEVICH", birth: "29.12.1958", role: "korovul", group: "technical", grade: "Mutaxassis", order: "buyruq № 297-11-169 09.10.2023 dan", totalExp: "2 yil 11 oy", pedExp: "", status: "Ishda" },
+];
+
+
+// ============================================================================
+// DMTT OZIQ-OVQAT OMBOR DAFTARI BAZASI (EXCEL NAMUNASI ASOSIDA - 24 TA MAHSULOT)
+// ============================================================================
+const FOOD_PRODUCTS_LEDGER = [
+    {
+        "id":  "gosht_mol",
+        "name":  "Mol go\u0027shti (lahm va suyakli)",
+        "category":  "gosht",
+        "categoryName":  "Go\u0027sht va parranda",
+        "unit":  "kg",
+        "initStock":  40,
+        "currentStock":  60,
+        "totalIn":  95,
+        "totalOut":  75,
+        "price":  85000,
+        "totalValue":  5100000,
+        "supplierDefault":  "Vodiy Go\u0027sht Ta\u0027minot XK",
+        "temp":  "-18°C dan 0°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Vodiy Go\u0027sht Ta\u0027minot XK",
+                           "invoice":  "YX-101",
+                           "price":  85000,
+                           "inQty":  50,
+                           "outQty":  0,
+                           "balance":  90,
+                           "summa":  7650000,
+                           "note":  "Yangi oy ta\u0027minoti"
+                       },
+                       {
+                           "date":  "04.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-41",
+                           "price":  85000,
+                           "inQty":  0,
+                           "outQty":  14,
+                           "balance":  76,
+                           "summa":  6460000,
+                           "note":  "Mastava va kotlet tayyorlash"
+                       },
+                       {
+                           "date":  "08.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-45",
+                           "price":  85000,
+                           "inQty":  0,
+                           "outQty":  16,
+                           "balance":  60,
+                           "summa":  5100000,
+                           "note":  "Sho\u0027rva va teftel"
+                       },
+                       {
+                           "date":  "12.09.2026",
+                           "supplier":  "Vodiy Go\u0027sht Ta\u0027minot XK",
+                           "invoice":  "YX-115",
+                           "price":  85000,
+                           "inQty":  45,
+                           "outQty":  0,
+                           "balance":  105,
+                           "summa":  8925000,
+                           "note":  "Haftalik kirim"
+                       },
+                       {
+                           "date":  "15.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-51",
+                           "price":  85000,
+                           "inQty":  0,
+                           "outQty":  15,
+                           "balance":  90,
+                           "summa":  7650000,
+                           "note":  "Qovurma go\u0027sht va sho\u0027rva"
+                       },
+                       {
+                           "date":  "18.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-56",
+                           "price":  85000,
+                           "inQty":  0,
+                           "outQty":  18,
+                           "balance":  72,
+                           "summa":  6120000,
+                           "note":  "Bayram palovi"
+                       },
+                       {
+                           "date":  "21.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-60",
+                           "price":  85000,
+                           "inQty":  0,
+                           "outQty":  12,
+                           "balance":  60,
+                           "summa":  5100000,
+                           "note":  "Dimlama go\u0027shti"
+                       }
+                   ]
+    },
+    {
+        "id":  "gosht_tovuq",
+        "name":  "Parranda go\u0027shti (tovuq go\u0027shti)",
+        "category":  "gosht",
+        "categoryName":  "Go\u0027sht va parranda",
+        "unit":  "kg",
+        "initStock":  25,
+        "currentStock":  49,
+        "totalIn":  65,
+        "totalOut":  41,
+        "price":  38000,
+        "totalValue":  1862000,
+        "supplierDefault":  "Farg\u0027ona Parranda AJ",
+        "temp":  "-18°C dan -2°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "02.09.2026",
+                           "supplier":  "Farg\u0027ona Parranda AJ",
+                           "invoice":  "YX-88",
+                           "price":  38000,
+                           "inQty":  35,
+                           "outQty":  0,
+                           "balance":  60,
+                           "summa":  2280000,
+                           "note":  "Tovuq go\u0027shti kirimi"
+                       },
+                       {
+                           "date":  "05.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-42",
+                           "price":  38000,
+                           "inQty":  0,
+                           "outQty":  12,
+                           "balance":  48,
+                           "summa":  1824000,
+                           "note":  "Pishirilgan tovuq"
+                       },
+                       {
+                           "date":  "10.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-48",
+                           "price":  38000,
+                           "inQty":  0,
+                           "outQty":  14,
+                           "balance":  34,
+                           "summa":  1292000,
+                           "note":  "Tovuq sho\u0027rva"
+                       },
+                       {
+                           "date":  "16.09.2026",
+                           "supplier":  "Farg\u0027ona Parranda AJ",
+                           "invoice":  "YX-99",
+                           "price":  38000,
+                           "inQty":  30,
+                           "outQty":  0,
+                           "balance":  64,
+                           "summa":  2432000,
+                           "note":  "Rejaviy ta\u0027minot"
+                       },
+                       {
+                           "date":  "19.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-58",
+                           "price":  38000,
+                           "inQty":  0,
+                           "outQty":  15,
+                           "balance":  49,
+                           "summa":  1862000,
+                           "note":  "Tovuqli ragu"
+                       }
+                   ]
+    },
+    {
+        "id":  "sut",
+        "name":  "Sut (3.2% pasterizatsiyalangan)",
+        "category":  "sut",
+        "categoryName":  "Sut mahsulotlari",
+        "unit":  "L",
+        "initStock":  30,
+        "currentStock":  145,
+        "totalIn":  255,
+        "totalOut":  140,
+        "price":  9000,
+        "totalValue":  1305000,
+        "supplierDefault":  "Vodiy Suti XK",
+        "temp":  "+2°C dan +6°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Vodiy Suti XK",
+                           "invoice":  "YX-201",
+                           "price":  9000,
+                           "inQty":  80,
+                           "outQty":  0,
+                           "balance":  110,
+                           "summa":  990000,
+                           "note":  "Kunlik pasterizatsiya suti"
+                       },
+                       {
+                           "date":  "02.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-39",
+                           "price":  9000,
+                           "inQty":  0,
+                           "outQty":  25,
+                           "balance":  85,
+                           "summa":  765000,
+                           "note":  "Nonushta bo\u0027tqasi uchun"
+                       },
+                       {
+                           "date":  "05.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-43",
+                           "price":  9000,
+                           "inQty":  0,
+                           "outQty":  25,
+                           "balance":  60,
+                           "summa":  540000,
+                           "note":  "Kakaoli sut va bo\u0027tqa"
+                       },
+                       {
+                           "date":  "08.09.2026",
+                           "supplier":  "Vodiy Suti XK",
+                           "invoice":  "YX-212",
+                           "price":  9000,
+                           "inQty":  90,
+                           "outQty":  0,
+                           "balance":  150,
+                           "summa":  1350000,
+                           "note":  "Yangi sut partiyasi"
+                       },
+                       {
+                           "date":  "11.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-49",
+                           "price":  9000,
+                           "inQty":  0,
+                           "outQty":  30,
+                           "balance":  120,
+                           "summa":  1080000,
+                           "note":  "Manniy va guruchli bo\u0027tqa"
+                       },
+                       {
+                           "date":  "15.09.2026",
+                           "supplier":  "Vodiy Suti XK",
+                           "invoice":  "YX-225",
+                           "price":  9000,
+                           "inQty":  85,
+                           "outQty":  0,
+                           "balance":  205,
+                           "summa":  1845000,
+                           "note":  "Haftalik sut kirimi"
+                       },
+                       {
+                           "date":  "18.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-57",
+                           "price":  9000,
+                           "inQty":  0,
+                           "outQty":  32,
+                           "balance":  173,
+                           "summa":  1557000,
+                           "note":  "Sutli choy va bo\u0027tqa"
+                       },
+                       {
+                           "date":  "21.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-61",
+                           "price":  9000,
+                           "inQty":  0,
+                           "outQty":  28,
+                           "balance":  145,
+                           "summa":  1305000,
+                           "note":  "Nonushta suti"
+                       }
+                   ]
+    },
+    {
+        "id":  "saryog",
+        "name":  "Saryog\u0027 (82.5% tabiiy sariyog\u0027)",
+        "category":  "sut",
+        "categoryName":  "Sut mahsulotlari",
+        "unit":  "kg",
+        "initStock":  15,
+        "currentStock":  42,
+        "totalIn":  45,
+        "totalOut":  18,
+        "price":  85000,
+        "totalValue":  3570000,
+        "supplierDefault":  "Farg\u0027ona Sut AK",
+        "temp":  "-5°C dan 0°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Farg\u0027ona Sut AK",
+                           "invoice":  "YX-142",
+                           "price":  85000,
+                           "inQty":  25,
+                           "outQty":  0,
+                           "balance":  40,
+                           "summa":  3400000,
+                           "note":  "Oliy nav saryog\u0027"
+                       },
+                       {
+                           "date":  "04.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-41",
+                           "price":  85000,
+                           "inQty":  0,
+                           "outQty":  5,
+                           "balance":  35,
+                           "summa":  2975000,
+                           "note":  "Bo\u0027tqa va buterbrod"
+                       },
+                       {
+                           "date":  "10.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-48",
+                           "price":  85000,
+                           "inQty":  0,
+                           "outQty":  6,
+                           "balance":  29,
+                           "summa":  2465000,
+                           "note":  "Taomlar uchun"
+                       },
+                       {
+                           "date":  "16.09.2026",
+                           "supplier":  "Farg\u0027ona Sut AK",
+                           "invoice":  "YX-155",
+                           "price":  85000,
+                           "inQty":  20,
+                           "outQty":  0,
+                           "balance":  49,
+                           "summa":  4165000,
+                           "note":  "Reja bo\u0027yicha kirim"
+                       },
+                       {
+                           "date":  "20.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-59",
+                           "price":  85000,
+                           "inQty":  0,
+                           "outQty":  7,
+                           "balance":  42,
+                           "summa":  3570000,
+                           "note":  "Nonushta va taom tayyorlash"
+                       }
+                   ]
+    },
+    {
+        "id":  "qatiq",
+        "name":  "Qatiq / Kefir (Tabiiy)",
+        "category":  "sut",
+        "categoryName":  "Sut mahsulotlari",
+        "unit":  "L",
+        "initStock":  20,
+        "currentStock":  65,
+        "totalIn":  85,
+        "totalOut":  40,
+        "price":  9500,
+        "totalValue":  617500,
+        "supplierDefault":  "Vodiy Suti XK",
+        "temp":  "+2°C dan +4°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "03.09.2026",
+                           "supplier":  "Vodiy Suti XK",
+                           "invoice":  "YX-205",
+                           "price":  9500,
+                           "inQty":  40,
+                           "outQty":  0,
+                           "balance":  60,
+                           "summa":  570000,
+                           "note":  "Qatiq kirimi"
+                       },
+                       {
+                           "date":  "06.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-44",
+                           "price":  9500,
+                           "inQty":  0,
+                           "outQty":  18,
+                           "balance":  42,
+                           "summa":  399000,
+                           "note":  "Ikkinchi tushlik"
+                       },
+                       {
+                           "date":  "12.09.2026",
+                           "supplier":  "Vodiy Suti XK",
+                           "invoice":  "YX-218",
+                           "price":  9500,
+                           "inQty":  45,
+                           "outQty":  0,
+                           "balance":  87,
+                           "summa":  826500,
+                           "note":  "Yangi partiya"
+                       },
+                       {
+                           "date":  "17.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-54",
+                           "price":  9500,
+                           "inQty":  0,
+                           "outQty":  22,
+                           "balance":  65,
+                           "summa":  617500,
+                           "note":  "Bolalar uchun qatiq"
+                       }
+                   ]
+    },
+    {
+        "id":  "tvorog",
+        "name":  "Tvorog (5% yog\u0027lilikdagi)",
+        "category":  "sut",
+        "categoryName":  "Sut mahsulotlari",
+        "unit":  "kg",
+        "initStock":  12,
+        "currentStock":  39,
+        "totalIn":  45,
+        "totalOut":  18,
+        "price":  32000,
+        "totalValue":  1248000,
+        "supplierDefault":  "Vodiy Suti XK",
+        "temp":  "+2°C dan +4°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "02.09.2026",
+                           "supplier":  "Vodiy Suti XK",
+                           "invoice":  "YX-202",
+                           "price":  32000,
+                           "inQty":  20,
+                           "outQty":  0,
+                           "balance":  32,
+                           "summa":  1024000,
+                           "note":  "Tvorog kirimi"
+                       },
+                       {
+                           "date":  "05.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-43",
+                           "price":  32000,
+                           "inQty":  0,
+                           "outQty":  8,
+                           "balance":  24,
+                           "summa":  768000,
+                           "note":  "Sirnik va tvorogli pishiriq"
+                       },
+                       {
+                           "date":  "13.09.2026",
+                           "supplier":  "Vodiy Suti XK",
+                           "invoice":  "YX-220",
+                           "price":  32000,
+                           "inQty":  25,
+                           "outQty":  0,
+                           "balance":  49,
+                           "summa":  1568000,
+                           "note":  "Yangi kirim"
+                       },
+                       {
+                           "date":  "19.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-58",
+                           "price":  32000,
+                           "inQty":  0,
+                           "outQty":  10,
+                           "balance":  39,
+                           "summa":  1248000,
+                           "note":  "Zapekanka uchun"
+                       }
+                   ]
+    },
+    {
+        "id":  "yog_osimlik",
+        "name":  "O\u0027simlik yog\u0027i (tozalangan kungaboqar)",
+        "category":  "yog",
+        "categoryName":  "Yog\u0027 va shakar",
+        "unit":  "L",
+        "initStock":  45,
+        "currentStock":  64,
+        "totalIn":  60,
+        "totalOut":  41,
+        "price":  18000,
+        "totalValue":  1152000,
+        "supplierDefault":  "Farg\u0027ona Yog\u0027 Moy AJ",
+        "temp":  "+5°C dan +20°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Farg\u0027ona Yog\u0027 Moy AJ",
+                           "invoice":  "YX-310",
+                           "price":  18000,
+                           "inQty":  60,
+                           "outQty":  0,
+                           "balance":  105,
+                           "summa":  1890000,
+                           "note":  "O\u0027simlik yog\u0027i kirimi"
+                       },
+                       {
+                           "date":  "05.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-43",
+                           "price":  18000,
+                           "inQty":  0,
+                           "outQty":  12,
+                           "balance":  93,
+                           "summa":  1674000,
+                           "note":  "Qovurish va dimlashga"
+                       },
+                       {
+                           "date":  "11.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-49",
+                           "price":  18000,
+                           "inQty":  0,
+                           "outQty":  14,
+                           "balance":  79,
+                           "summa":  1422000,
+                           "note":  "Palov va salatlarga"
+                       },
+                       {
+                           "date":  "18.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-56",
+                           "price":  18000,
+                           "inQty":  0,
+                           "outQty":  15,
+                           "balance":  64,
+                           "summa":  1152000,
+                           "note":  "Pishiriq va taomlarga"
+                       }
+                   ]
+    },
+    {
+        "id":  "tuxum",
+        "name":  "Tovuq tuxumi (1-toifa saralangan)",
+        "category":  "tuxum",
+        "categoryName":  "Tuxum",
+        "unit":  "dona",
+        "initStock":  300,
+        "currentStock":  1070,
+        "totalIn":  1200,
+        "totalOut":  430,
+        "price":  1600,
+        "totalValue":  1712000,
+        "supplierDefault":  "Farg\u0027ona Parranda AJ",
+        "temp":  "0°C dan +10°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Farg\u0027ona Parranda AJ",
+                           "invoice":  "YX-91",
+                           "price":  1600,
+                           "inQty":  600,
+                           "outQty":  0,
+                           "balance":  900,
+                           "summa":  1440000,
+                           "note":  "Saralangan tuxum kirimi"
+                       },
+                       {
+                           "date":  "04.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-41",
+                           "price":  1600,
+                           "inQty":  0,
+                           "outQty":  150,
+                           "balance":  750,
+                           "summa":  1200000,
+                           "note":  "Qaynatilgan tuxum nonushtaga"
+                       },
+                       {
+                           "date":  "09.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-47",
+                           "price":  1600,
+                           "inQty":  0,
+                           "outQty":  120,
+                           "balance":  630,
+                           "summa":  1008000,
+                           "note":  "Pishiriq va omlet uchun"
+                       },
+                       {
+                           "date":  "14.09.2026",
+                           "supplier":  "Farg\u0027ona Parranda AJ",
+                           "invoice":  "YX-105",
+                           "price":  1600,
+                           "inQty":  600,
+                           "outQty":  0,
+                           "balance":  1230,
+                           "summa":  1968000,
+                           "note":  "Haftalik yangi tuxum"
+                       },
+                       {
+                           "date":  "18.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-57",
+                           "price":  1600,
+                           "inQty":  0,
+                           "outQty":  160,
+                           "balance":  1070,
+                           "summa":  1712000,
+                           "note":  "Nonushta uchun"
+                       }
+                   ]
+    },
+    {
+        "id":  "un",
+        "name":  "Bug\u0027doy uni (1-nav Oliy sifat)",
+        "category":  "don",
+        "categoryName":  "Don mahsulotlari",
+        "unit":  "kg",
+        "initStock":  120,
+        "currentStock":  215,
+        "totalIn":  200,
+        "totalOut":  105,
+        "price":  6200,
+        "totalValue":  1333000,
+        "supplierDefault":  "Farg\u0027ona Don Mahsulotlari AJ",
+        "temp":  "Quruq, salqin xonada",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Farg\u0027ona Don Mahsulotlari AJ",
+                           "invoice":  "YX-451",
+                           "price":  6200,
+                           "inQty":  200,
+                           "outQty":  0,
+                           "balance":  320,
+                           "summa":  1984000,
+                           "note":  "Bug\u0027doy uni qoplarda"
+                       },
+                       {
+                           "date":  "06.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-44",
+                           "price":  6200,
+                           "inQty":  0,
+                           "outQty":  35,
+                           "balance":  285,
+                           "summa":  1767000,
+                           "note":  "Non va somsa xamiriga"
+                       },
+                       {
+                           "date":  "12.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-50",
+                           "price":  6200,
+                           "inQty":  0,
+                           "outQty":  40,
+                           "balance":  245,
+                           "summa":  1519000,
+                           "note":  "Makaron va blinchik"
+                       },
+                       {
+                           "date":  "17.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-55",
+                           "price":  6200,
+                           "inQty":  0,
+                           "outQty":  30,
+                           "balance":  215,
+                           "summa":  1333000,
+                           "note":  "Oshxona pishiriqlari"
+                       }
+                   ]
+    },
+    {
+        "id":  "guruch",
+        "name":  "Guruch (Alanga navli saralangan)",
+        "category":  "don",
+        "categoryName":  "Don mahsulotlari",
+        "unit":  "kg",
+        "initStock":  60,
+        "currentStock":  75,
+        "totalIn":  80,
+        "totalOut":  65,
+        "price":  18500,
+        "totalValue":  1387500,
+        "supplierDefault":  "Farg\u0027ona Baraka MChJ",
+        "temp":  "Quruq xonada",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Farg\u0027ona Baraka MChJ",
+                           "invoice":  "YX-460",
+                           "price":  18500,
+                           "inQty":  80,
+                           "outQty":  0,
+                           "balance":  140,
+                           "summa":  2590000,
+                           "note":  "Oshbop Alanga guruchi"
+                       },
+                       {
+                           "date":  "05.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-43",
+                           "price":  18500,
+                           "inQty":  0,
+                           "outQty":  18,
+                           "balance":  122,
+                           "summa":  2257000,
+                           "note":  "Sutli guruch bo\u0027tqasi"
+                       },
+                       {
+                           "date":  "11.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-49",
+                           "price":  18500,
+                           "inQty":  0,
+                           "outQty":  22,
+                           "balance":  100,
+                           "summa":  1850000,
+                           "note":  "Mastava taomi"
+                       },
+                       {
+                           "date":  "18.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-56",
+                           "price":  18500,
+                           "inQty":  0,
+                           "outQty":  25,
+                           "balance":  75,
+                           "summa":  1387500,
+                           "note":  "DMTT osh dasturxoni palovi"
+                       }
+                   ]
+    },
+    {
+        "id":  "makaron",
+        "name":  "Makaron mahsulotlari (Oliy nav vermishel)",
+        "category":  "don",
+        "categoryName":  "Don mahsulotlari",
+        "unit":  "kg",
+        "initStock":  50,
+        "currentStock":  87,
+        "totalIn":  70,
+        "totalOut":  33,
+        "price":  11000,
+        "totalValue":  957000,
+        "supplierDefault":  "Vodiy Ta\u0027minot XK",
+        "temp":  "Quruq xonada",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "02.09.2026",
+                           "supplier":  "Vodiy Ta\u0027minot XK",
+                           "invoice":  "YX-462",
+                           "price":  11000,
+                           "inQty":  70,
+                           "outQty":  0,
+                           "balance":  120,
+                           "summa":  1320000,
+                           "note":  "Makaron kirimi"
+                       },
+                       {
+                           "date":  "07.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-46",
+                           "price":  11000,
+                           "inQty":  0,
+                           "outQty":  15,
+                           "balance":  105,
+                           "summa":  1155000,
+                           "note":  "Sho\u0027rva va garnir"
+                       },
+                       {
+                           "date":  "14.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-51",
+                           "price":  11000,
+                           "inQty":  0,
+                           "outQty":  18,
+                           "balance":  87,
+                           "summa":  957000,
+                           "note":  "Vermishel suti bilan"
+                       }
+                   ]
+    },
+    {
+        "id":  "grechka",
+        "name":  "Grechka yormasi (Tozalangan)",
+        "category":  "don",
+        "categoryName":  "Don mahsulotlari",
+        "unit":  "kg",
+        "initStock":  35,
+        "currentStock":  59,
+        "totalIn":  50,
+        "totalOut":  26,
+        "price":  16000,
+        "totalValue":  944000,
+        "supplierDefault":  "Vodiy Ta\u0027minot XK",
+        "temp":  "Quruq xonada",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Vodiy Ta\u0027minot XK",
+                           "invoice":  "YX-465",
+                           "price":  16000,
+                           "inQty":  50,
+                           "outQty":  0,
+                           "balance":  85,
+                           "summa":  1360000,
+                           "note":  "Grechka kirimi"
+                       },
+                       {
+                           "date":  "08.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-47",
+                           "price":  16000,
+                           "inQty":  0,
+                           "outQty":  14,
+                           "balance":  71,
+                           "summa":  1136000,
+                           "note":  "Grechka bo\u0027tqasi va kotlet"
+                       },
+                       {
+                           "date":  "16.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-53",
+                           "price":  16000,
+                           "inQty":  0,
+                           "outQty":  12,
+                           "balance":  59,
+                           "summa":  944000,
+                           "note":  "Parnoy kotlet garniriga"
+                       }
+                   ]
+    },
+    {
+        "id":  "mosh",
+        "name":  "Mosh (saralangan mayda)",
+        "category":  "don",
+        "categoryName":  "Don mahsulotlari",
+        "unit":  "kg",
+        "initStock":  25,
+        "currentStock":  35,
+        "totalIn":  30,
+        "totalOut":  20,
+        "price":  17000,
+        "totalValue":  595000,
+        "supplierDefault":  "Farg\u0027ona Baraka MChJ",
+        "temp":  "Quruq xonada",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "03.09.2026",
+                           "supplier":  "Farg\u0027ona Baraka MChJ",
+                           "invoice":  "YX-468",
+                           "price":  17000,
+                           "inQty":  30,
+                           "outQty":  0,
+                           "balance":  55,
+                           "summa":  935000,
+                           "note":  "Saralangan mosh kirimi"
+                       },
+                       {
+                           "date":  "09.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-48",
+                           "price":  17000,
+                           "inQty":  0,
+                           "outQty":  10,
+                           "balance":  45,
+                           "summa":  765000,
+                           "note":  "Moshxo\u0027rda sho\u0027rvasi"
+                       },
+                       {
+                           "date":  "19.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-58",
+                           "price":  17000,
+                           "inQty":  0,
+                           "outQty":  10,
+                           "balance":  35,
+                           "summa":  595000,
+                           "note":  "Moshkichiri taomi"
+                       }
+                   ]
+    },
+    {
+        "id":  "shakar",
+        "name":  "Shakar (oq tozalangan)",
+        "category":  "yog",
+        "categoryName":  "Yog\u0027 va shakar",
+        "unit":  "kg",
+        "initStock":  50,
+        "currentStock":  90,
+        "totalIn":  100,
+        "totalOut":  60,
+        "price":  13500,
+        "totalValue":  1215000,
+        "supplierDefault":  "Oziq-ovqat Savdo MChJ",
+        "temp":  "Quruq xonada",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Oziq-ovqat Savdo MChJ",
+                           "invoice":  "YX-502",
+                           "price":  13500,
+                           "inQty":  100,
+                           "outQty":  0,
+                           "balance":  150,
+                           "summa":  2025000,
+                           "note":  "Qoplangan shakar kirimi"
+                       },
+                       {
+                           "date":  "06.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-44",
+                           "price":  13500,
+                           "inQty":  0,
+                           "outQty":  20,
+                           "balance":  130,
+                           "summa":  1755000,
+                           "note":  "Choy, kompot va bo\u0027tqaga"
+                       },
+                       {
+                           "date":  "13.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-50",
+                           "price":  13500,
+                           "inQty":  0,
+                           "outQty":  22,
+                           "balance":  108,
+                           "summa":  1458000,
+                           "note":  "Pishiriq va choyga"
+                       },
+                       {
+                           "date":  "20.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-59",
+                           "price":  13500,
+                           "inQty":  0,
+                           "outQty":  18,
+                           "balance":  90,
+                           "summa":  1215000,
+                           "note":  "Kompot va sharbatlarga"
+                       }
+                   ]
+    },
+    {
+        "id":  "kartoshka",
+        "name":  "Kartoshka (Qizil va sariq oshbop)",
+        "category":  "sabzavot",
+        "categoryName":  "Sabzavot va mevalar",
+        "unit":  "kg",
+        "initStock":  90,
+        "currentStock":  243,
+        "totalIn":  270,
+        "totalOut":  117,
+        "price":  5500,
+        "totalValue":  1336500,
+        "supplierDefault":  "Dehqonobod Agro Klaster",
+        "temp":  "+3°C dan +7°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Dehqonobod Agro Klaster",
+                           "invoice":  "YX-470",
+                           "price":  5500,
+                           "inQty":  150,
+                           "outQty":  0,
+                           "balance":  240,
+                           "summa":  1320000,
+                           "note":  "Yangi kartoshka ta\u0027minoti"
+                       },
+                       {
+                           "date":  "04.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-41",
+                           "price":  5500,
+                           "inQty":  0,
+                           "outQty":  35,
+                           "balance":  205,
+                           "summa":  1127500,
+                           "note":  "Sho\u0027rva va pyure"
+                       },
+                       {
+                           "date":  "09.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-47",
+                           "price":  5500,
+                           "inQty":  0,
+                           "outQty":  40,
+                           "balance":  165,
+                           "summa":  907500,
+                           "note":  "Dimlama va mastava"
+                       },
+                       {
+                           "date":  "15.09.2026",
+                           "supplier":  "Dehqonobod Agro Klaster",
+                           "invoice":  "YX-482",
+                           "price":  5500,
+                           "inQty":  120,
+                           "outQty":  0,
+                           "balance":  285,
+                           "summa":  1567500,
+                           "note":  "Haftalik yangi kirim"
+                       },
+                       {
+                           "date":  "18.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-57",
+                           "price":  5500,
+                           "inQty":  0,
+                           "outQty":  42,
+                           "balance":  243,
+                           "summa":  1336500,
+                           "note":  "Palov va sabzavotli ragu"
+                       }
+                   ]
+    },
+    {
+        "id":  "sabzi",
+        "name":  "Sabzi (Sariq va qizil shirador)",
+        "category":  "sabzavot",
+        "categoryName":  "Sabzavot va mevalar",
+        "unit":  "kg",
+        "initStock":  50,
+        "currentStock":  70,
+        "totalIn":  80,
+        "totalOut":  60,
+        "price":  4000,
+        "totalValue":  280000,
+        "supplierDefault":  "Dehqonobod Agro Klaster",
+        "temp":  "+2°C dan +5°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Dehqonobod Agro Klaster",
+                           "invoice":  "YX-471",
+                           "price":  4000,
+                           "inQty":  80,
+                           "outQty":  0,
+                           "balance":  130,
+                           "summa":  520000,
+                           "note":  "Sabzi kirimi"
+                       },
+                       {
+                           "date":  "05.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-42",
+                           "price":  4000,
+                           "inQty":  0,
+                           "outQty":  18,
+                           "balance":  112,
+                           "summa":  448000,
+                           "note":  "Taomlar va salatlar"
+                       },
+                       {
+                           "date":  "11.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-49",
+                           "price":  4000,
+                           "inQty":  0,
+                           "outQty":  20,
+                           "balance":  92,
+                           "summa":  368000,
+                           "note":  "Mastava va sho\u0027rva"
+                       },
+                       {
+                           "date":  "17.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-56",
+                           "price":  4000,
+                           "inQty":  0,
+                           "outQty":  22,
+                           "balance":  70,
+                           "summa":  280000,
+                           "note":  "Bayramona osh uchun"
+                       }
+                   ]
+    },
+    {
+        "id":  "piyoz",
+        "name":  "Piyoz (Oshbop tozalangan)",
+        "category":  "sabzavot",
+        "categoryName":  "Sabzavot va mevalar",
+        "unit":  "kg",
+        "initStock":  45,
+        "currentStock":  61,
+        "totalIn":  70,
+        "totalOut":  54,
+        "price":  3500,
+        "totalValue":  213500,
+        "supplierDefault":  "Agro Fermer MChJ",
+        "temp":  "Quruq, shamollatiladigan joy",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Agro Fermer MChJ",
+                           "invoice":  "YX-472",
+                           "price":  3500,
+                           "inQty":  70,
+                           "outQty":  0,
+                           "balance":  115,
+                           "summa":  402500,
+                           "note":  "Oshbop piyoz kirimi"
+                       },
+                       {
+                           "date":  "06.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-44",
+                           "price":  3500,
+                           "inQty":  0,
+                           "outQty":  16,
+                           "balance":  99,
+                           "summa":  346500,
+                           "note":  "Kundalik qovurishga"
+                       },
+                       {
+                           "date":  "12.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-50",
+                           "price":  3500,
+                           "inQty":  0,
+                           "outQty":  18,
+                           "balance":  81,
+                           "summa":  283500,
+                           "note":  "Taomlar va salatlar"
+                       },
+                       {
+                           "date":  "18.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-57",
+                           "price":  3500,
+                           "inQty":  0,
+                           "outQty":  20,
+                           "balance":  61,
+                           "summa":  213500,
+                           "note":  "Palov va dimlama"
+                       }
+                   ]
+    },
+    {
+        "id":  "karam",
+        "name":  "Karam (Oq boshli barra)",
+        "category":  "sabzavot",
+        "categoryName":  "Sabzavot va mevalar",
+        "unit":  "kg",
+        "initStock":  30,
+        "currentStock":  49,
+        "totalIn":  50,
+        "totalOut":  31,
+        "price":  4200,
+        "totalValue":  205800,
+        "supplierDefault":  "Dehqonobod Agro Klaster",
+        "temp":  "+1°C dan +4°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "02.09.2026",
+                           "supplier":  "Dehqonobod Agro Klaster",
+                           "invoice":  "YX-474",
+                           "price":  4200,
+                           "inQty":  50,
+                           "outQty":  0,
+                           "balance":  80,
+                           "summa":  336000,
+                           "note":  "Barra karam kirimi"
+                       },
+                       {
+                           "date":  "07.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-45",
+                           "price":  4200,
+                           "inQty":  0,
+                           "outQty":  15,
+                           "balance":  65,
+                           "summa":  273000,
+                           "note":  "Borsch va barra salat"
+                       },
+                       {
+                           "date":  "14.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-52",
+                           "price":  4200,
+                           "inQty":  0,
+                           "outQty":  16,
+                           "balance":  49,
+                           "summa":  205800,
+                           "note":  "Golubtsi va vitaminli salat"
+                       }
+                   ]
+    },
+    {
+        "id":  "olma",
+        "name":  "Olma (Semerenko va qizil shirin)",
+        "category":  "sabzavot",
+        "categoryName":  "Sabzavot va mevalar",
+        "unit":  "kg",
+        "initStock":  40,
+        "currentStock":  53,
+        "totalIn":  80,
+        "totalOut":  67,
+        "price":  12000,
+        "totalValue":  636000,
+        "supplierDefault":  "Bog\u0027dorchilik Agro XK",
+        "temp":  "+2°C dan +6°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Bog\u0027dorchilik Agro XK",
+                           "invoice":  "YX-475",
+                           "price":  12000,
+                           "inQty":  80,
+                           "outQty":  0,
+                           "balance":  120,
+                           "summa":  1440000,
+                           "note":  "Shirador olma kirimi"
+                       },
+                       {
+                           "date":  "04.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-41",
+                           "price":  12000,
+                           "inQty":  0,
+                           "outQty":  20,
+                           "balance":  100,
+                           "summa":  1200000,
+                           "note":  "Tushlik meva ulushi"
+                       },
+                       {
+                           "date":  "10.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-48",
+                           "price":  12000,
+                           "inQty":  0,
+                           "outQty":  22,
+                           "balance":  78,
+                           "summa":  936000,
+                           "note":  "Bolalar uchun yangi meva"
+                       },
+                       {
+                           "date":  "17.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-55",
+                           "price":  12000,
+                           "inQty":  0,
+                           "outQty":  25,
+                           "balance":  53,
+                           "summa":  636000,
+                           "note":  "Meva berish va kompot"
+                       }
+                   ]
+    },
+    {
+        "id":  "non",
+        "name":  "Non (Buxanka va baton qolipli)",
+        "category":  "boshqa",
+        "categoryName":  "Non va boshqa",
+        "unit":  "dona",
+        "initStock":  50,
+        "currentStock":  285,
+        "totalIn":  380,
+        "totalOut":  145,
+        "price":  3200,
+        "totalValue":  912000,
+        "supplierDefault":  "Farg\u0027ona Non AJ",
+        "temp":  "Maxsus quti va javonlarda",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Farg\u0027ona Non AJ",
+                           "invoice":  "NX-01",
+                           "price":  3200,
+                           "inQty":  120,
+                           "outQty":  0,
+                           "balance":  170,
+                           "summa":  544000,
+                           "note":  "Issiq non yetkazib berish"
+                       },
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-39",
+                           "price":  3200,
+                           "inQty":  0,
+                           "outQty":  45,
+                           "balance":  125,
+                           "summa":  400000,
+                           "note":  "Kunlik ovqatlanishga"
+                       },
+                       {
+                           "date":  "04.09.2026",
+                           "supplier":  "Farg\u0027ona Non AJ",
+                           "invoice":  "NX-04",
+                           "price":  3200,
+                           "inQty":  130,
+                           "outQty":  0,
+                           "balance":  255,
+                           "summa":  816000,
+                           "note":  "Yangi non partiyasi"
+                       },
+                       {
+                           "date":  "04.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-41",
+                           "price":  3200,
+                           "inQty":  0,
+                           "outQty":  50,
+                           "balance":  205,
+                           "summa":  656000,
+                           "note":  "Nonushta va tushlikka"
+                       },
+                       {
+                           "date":  "08.09.2026",
+                           "supplier":  "Farg\u0027ona Non AJ",
+                           "invoice":  "NX-08",
+                           "price":  3200,
+                           "inQty":  130,
+                           "outQty":  0,
+                           "balance":  335,
+                           "summa":  1072000,
+                           "note":  "Rejaviy non ta\u0027minoti"
+                       },
+                       {
+                           "date":  "08.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-45",
+                           "price":  3200,
+                           "inQty":  0,
+                           "outQty":  50,
+                           "balance":  285,
+                           "summa":  912000,
+                           "note":  "Kunlik ovqatlanish"
+                       }
+                   ]
+    },
+    {
+        "id":  "tomat",
+        "name":  "Tomat pastasi (25% quyuq tabiiy)",
+        "category":  "boshqa",
+        "categoryName":  "Non va boshqa",
+        "unit":  "kg",
+        "initStock":  18,
+        "currentStock":  30,
+        "totalIn":  25,
+        "totalOut":  13,
+        "price":  26000,
+        "totalValue":  780000,
+        "supplierDefault":  "Gold Konserva MChJ",
+        "temp":  "+5°C dan +15°C gacha",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Gold Konserva MChJ",
+                           "invoice":  "YX-490",
+                           "price":  26000,
+                           "inQty":  25,
+                           "outQty":  0,
+                           "balance":  43,
+                           "summa":  1118000,
+                           "note":  "Tomat pastasi bankalarda"
+                       },
+                       {
+                           "date":  "08.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-46",
+                           "price":  26000,
+                           "inQty":  0,
+                           "outQty":  6,
+                           "balance":  37,
+                           "summa":  962000,
+                           "note":  "Sho\u0027rva va dimlamaga"
+                       },
+                       {
+                           "date":  "16.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-53",
+                           "price":  26000,
+                           "inQty":  0,
+                           "outQty":  7,
+                           "balance":  30,
+                           "summa":  780000,
+                           "note":  "Taomlar tayyorlashga"
+                       }
+                   ]
+    },
+    {
+        "id":  "choy",
+        "name":  "Choy (Qora va ko\u0027k №95 saralangan)",
+        "category":  "boshqa",
+        "categoryName":  "Non va boshqa",
+        "unit":  "kg",
+        "initStock":  10,
+        "currentStock":  17,
+        "totalIn":  15,
+        "totalOut":  8,
+        "price":  45000,
+        "totalValue":  765000,
+        "supplierDefault":  "Vodiy Savdo MChJ",
+        "temp":  "Quruq xonada",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Vodiy Savdo MChJ",
+                           "invoice":  "YX-515",
+                           "price":  45000,
+                           "inQty":  15,
+                           "outQty":  0,
+                           "balance":  25,
+                           "summa":  1125000,
+                           "note":  "Choy qutilarida"
+                       },
+                       {
+                           "date":  "07.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-45",
+                           "price":  45000,
+                           "inQty":  0,
+                           "outQty":  4,
+                           "balance":  21,
+                           "summa":  945000,
+                           "note":  "Kunlik damlashga"
+                       },
+                       {
+                           "date":  "15.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-52",
+                           "price":  45000,
+                           "inQty":  0,
+                           "outQty":  4,
+                           "balance":  17,
+                           "summa":  765000,
+                           "note":  "Choy va limonli ichimlik"
+                       }
+                   ]
+    },
+    {
+        "id":  "tuz",
+        "name":  "Osh tuzi (Oshxona yodlangan)",
+        "category":  "boshqa",
+        "categoryName":  "Non va boshqa",
+        "unit":  "kg",
+        "initStock":  30,
+        "currentStock":  53,
+        "totalIn":  40,
+        "totalOut":  17,
+        "price":  2500,
+        "totalValue":  132500,
+        "supplierDefault":  "Osh Tuzi Ta\u0027minot XK",
+        "temp":  "Quruq xonada",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "01.09.2026",
+                           "supplier":  "Osh Tuzi Ta\u0027minot XK",
+                           "invoice":  "YX-520",
+                           "price":  2500,
+                           "inQty":  40,
+                           "outQty":  0,
+                           "balance":  70,
+                           "summa":  175000,
+                           "note":  "Yodlangan tuz qoplarda"
+                       },
+                       {
+                           "date":  "08.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-46",
+                           "price":  2500,
+                           "inQty":  0,
+                           "outQty":  8,
+                           "balance":  62,
+                           "summa":  155000,
+                           "note":  "Taomlarga"
+                       },
+                       {
+                           "date":  "18.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-57",
+                           "price":  2500,
+                           "inQty":  0,
+                           "outQty":  9,
+                           "balance":  53,
+                           "summa":  132500,
+                           "note":  "Oshxona sarfi"
+                       }
+                   ]
+    },
+    {
+        "id":  "quruq_meva",
+        "name":  "Quritilgan mevalar (Mayiz va turshak kompotbop)",
+        "category":  "sabzavot",
+        "categoryName":  "Sabzavot va mevalar",
+        "unit":  "kg",
+        "initStock":  20,
+        "currentStock":  33,
+        "totalIn":  30,
+        "totalOut":  17,
+        "price":  22000,
+        "totalValue":  726000,
+        "supplierDefault":  "Farg\u0027ona Meva XK",
+        "temp":  "Quruq, salqin xonada",
+        "manager":  "Qambarova Nazira To\u0027xtasinovna (Xo\u0027jalik mudiri)",
+        "status":  "Yetarli",
+        "ledger":  [
+                       {
+                           "date":  "02.09.2026",
+                           "supplier":  "Farg\u0027ona Meva XK",
+                           "invoice":  "YX-495",
+                           "price":  22000,
+                           "inQty":  30,
+                           "outQty":  0,
+                           "balance":  50,
+                           "summa":  1100000,
+                           "note":  "Kompotbop quruq mevalar"
+                       },
+                       {
+                           "date":  "07.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-45",
+                           "price":  22000,
+                           "inQty":  0,
+                           "outQty":  8,
+                           "balance":  42,
+                           "summa":  924000,
+                           "note":  "Tabiiy vitaminli kompot"
+                       },
+                       {
+                           "date":  "14.09.2026",
+                           "supplier":  "Oshxona talabnomasi",
+                           "invoice":  "TL-52",
+                           "price":  22000,
+                           "inQty":  0,
+                           "outQty":  9,
+                           "balance":  33,
+                           "summa":  726000,
+                           "note":  "Shirin ichimlik uchun"
+                       }
+                   ]
+    }
+];
+
+
+
+// ============================================================================
+// 1. XODIMLAR BOSHQARUVI VA JADVALI (42 NAFAR RASMIY XODIMLAR)
+// ============================================================================
+let staffDataList = [...DMTT_STAFF_DATA];
+let currentStaffFilter = 'all';
+let currentStaffSearch = '';
+
+function loadStaffData() {
+    const saved = localStorage.getItem('dmtt57_staff_custom');
+    if (saved) {
+        try {
+            staffDataList = JSON.parse(saved);
+        } catch (e) {
+            staffDataList = [...DMTT_STAFF_DATA];
+        }
+    } else {
+        staffDataList = [...DMTT_STAFF_DATA];
+    }
+}
+
+function saveStaffData() {
+    localStorage.setItem('dmtt57_staff_custom', JSON.stringify(staffDataList));
+}
+
+function initStaffSection() {
+    loadStaffData();
+    renderStaffTable(currentStaffFilter, currentStaffSearch);
+}
+
+function renderStaffTable(filterGroup = 'all', searchQuery = '') {
+    currentStaffFilter = filterGroup;
+    currentStaffSearch = searchQuery.toLowerCase().trim();
+    const tbody = document.getElementById('staff-table-tbody');
+    if (!tbody) return;
+
+    let filtered = staffDataList;
+    if (filterGroup !== 'all') {
+        filtered = filtered.filter(s => s.group === filterGroup);
+    }
+    if (currentStaffSearch) {
+        filtered = filtered.filter(s => 
+            (s.name && s.name.toLowerCase().includes(currentStaffSearch)) ||
+            (s.role && s.role.toLowerCase().includes(currentStaffSearch)) ||
+            (s.order && s.order.toLowerCase().includes(currentStaffSearch)) ||
+            (s.grade && s.grade.toLowerCase().includes(currentStaffSearch))
+        );
+    }
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="10" class="text-center py-8 text-slate-400">
+                    <i class="fa-solid fa-user-slash text-2xl mb-2 text-slate-300"></i>
+                    <p class="font-bold text-sm">Hech qanday xodim topilmadi</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = filtered.map((s, idx) => {
+        let roleBadge = "bg-slate-100 text-slate-700";
+        if (s.group === 'management') roleBadge = "bg-purple-100 text-purple-800 font-bold";
+        else if (s.group === 'educator') roleBadge = "bg-blue-100 text-blue-800 font-semibold";
+        else if (s.group === 'assistant') roleBadge = "bg-amber-100 text-amber-800";
+        else if (s.group === 'medical_kitchen') roleBadge = "bg-emerald-100 text-emerald-800";
+        else if (s.group === 'technical') roleBadge = "bg-slate-100 text-slate-800";
+
+        let gradeBadge = "bg-slate-50 border border-slate-200 text-slate-600";
+        if (s.grade && s.grade.includes('Oliy')) gradeBadge = "bg-purple-50 border border-purple-200 text-purple-700 font-bold";
+        else if (s.grade && s.grade.includes('1-')) gradeBadge = "bg-blue-50 border border-blue-200 text-blue-700 font-semibold";
+        else if (s.grade && s.grade.includes('2-')) gradeBadge = "bg-amber-50 border border-amber-200 text-amber-700";
+
+        return `
+            <tr class="hover:bg-slate-50/90 transition border-b border-slate-100">
+                <td class="p-3 text-center font-bold text-slate-400 text-[11px]">${idx + 1}</td>
+                <td class="p-3">
+                    <div class="font-bold text-slate-900 text-xs">${s.name}</div>
+                    <div class="text-[10px] text-slate-400">ID: #57-X${String(s.id).padStart(3, '0')}</div>
+                </td>
+                <td class="p-3">
+                    <span class="px-2.5 py-1 rounded-lg text-[11px] ${roleBadge} inline-block">${s.role}</span>
+                </td>
+                <td class="p-3 text-slate-600 font-medium whitespace-nowrap text-[11px]">${s.birth || '-'}</td>
+                <td class="p-3">
+                    <span class="px-2 py-0.5 rounded text-[10px] ${gradeBadge}">${s.grade || 'Mutaxassis'}</span>
+                </td>
+                <td class="p-3 font-bold text-slate-800 text-[11px] whitespace-nowrap">${s.totalExp || '-'}</td>
+                <td class="p-3 font-semibold text-blue-700 text-[11px] whitespace-nowrap">${s.pedExp || '-'}</td>
+                <td class="p-3 text-slate-500 text-[10px] max-w-[180px] truncate" title="${s.order}">${s.order || '-'}</td>
+                <td class="p-3 text-center">
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">Ishda</span>
+                </td>
+                <td class="p-3 text-center">
+                    <button onclick="openStaffDetailModal(${s.id})" class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 font-bold text-[10px] transition flex items-center gap-1 mx-auto">
+                        <i class="fa-solid fa-eye text-[9px]"></i> Profil
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function filterStaffCategory(category) {
+    document.querySelectorAll('.staff-filter-btn').forEach(btn => {
+        btn.className = "staff-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition";
+    });
+    const activeBtn = document.getElementById(`staff-filter-${category}`);
+    if (activeBtn) {
+        activeBtn.className = "staff-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-600 text-white transition shadow-sm";
+    }
+    renderStaffTable(category, currentStaffSearch);
+}
+
+function handleStaffSearch(query) {
+    renderStaffTable(currentStaffFilter, query);
+}
+
+function openStaffDetailModal(staffId) {
+    const s = staffDataList.find(item => item.id === staffId);
+    if (!s) return;
+
+    const modal = document.getElementById('modal-staff-detail');
+    if (!modal) return;
+
+    document.getElementById('staff-modal-name').innerText = s.name;
+    document.getElementById('staff-modal-role').innerText = s.role;
+    document.getElementById('staff-modal-birth').innerText = s.birth || "Ko'rsatilmagan";
+    document.getElementById('staff-modal-grade').innerText = s.grade || "Mutaxassis";
+    document.getElementById('staff-modal-total-exp').innerText = s.totalExp || "Ko'rsatilmagan";
+    document.getElementById('staff-modal-ped-exp').innerText = s.pedExp || "Mavjud emas";
+    document.getElementById('staff-modal-order').innerText = s.order || "Hujjat rasmiylashtirilgan";
+    document.getElementById('staff-modal-phone').innerText = s.phone || "+998 (73) 244-57-01";
+
+    modal.classList.remove('hidden');
+}
+
+function closeStaffDetailModal() {
+    const modal = document.getElementById('modal-staff-detail');
+    if (modal) modal.classList.add('hidden');
+}
+
+function openAddStaffModal() {
+    const modal = document.getElementById('modal-add-staff');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeAddStaffModal() {
+    const modal = document.getElementById('modal-add-staff');
+    if (modal) modal.classList.add('hidden');
+}
+
+function saveNewStaff(e) {
+    e.preventDefault();
+    const name = document.getElementById('new-staff-name')?.value?.trim();
+    const role = document.getElementById('new-staff-role')?.value?.trim();
+    const birth = document.getElementById('new-staff-birth')?.value?.trim();
+    const group = document.getElementById('new-staff-group')?.value || 'educator';
+    const grade = document.getElementById('new-staff-grade')?.value?.trim() || 'Mutaxassis';
+    const totalExp = document.getElementById('new-staff-total-exp')?.value?.trim() || '1 yil';
+    const pedExp = document.getElementById('new-staff-ped-exp')?.value?.trim() || '';
+    const order = document.getElementById('new-staff-order')?.value?.trim() || 'Buyruq asosida';
+
+    if (!name || !role) {
+        alert("Iltimos, xodimning F.I.SH. va lavozimini kiriting!");
+        return;
+    }
+
+    const newId = staffDataList.length > 0 ? Math.max(...staffDataList.map(s => s.id)) + 1 : 1;
+    const newStaff = {
+        id: newId,
+        name: name.toUpperCase(),
+        birth: birth,
+        role: role,
+        group: group,
+        grade: grade,
+        totalExp: totalExp,
+        pedExp: pedExp,
+        order: order,
+        status: "Ishda",
+        phone: "+998 90 000-00-00"
+    };
+
+    staffDataList.unshift(newStaff);
+    saveStaffData();
+    renderStaffTable(currentStaffFilter, currentStaffSearch);
+    closeAddStaffModal();
+    showToast(`вњ… Yangi xodim "${name}" muvaffaqiyatli qo'shildi!`);
+}
+
+function exportStaffToExcel() {
+    let csv = "\uFEFFв„–,F.I.SH.,Lavozimi,Toifasi,Tug'ilgan sanasi,Umumiy mehnat staji,Pedagogik staji,Qabul buyrug'i,Holati\n";
+    staffDataList.forEach((s, idx) => {
+        csv += `"${idx+1}","${s.name}","${s.role}","${s.grade}","${s.birth}","${s.totalExp}","${s.pedExp}","${s.order}","Ishda"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", `57_DMTT_Xodimlar_Royxati_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("рџ“Ґ 57-DMTT xodimlar ro'yxati Excel (CSV) formatida yuklab olindi!");
+}
+
+
+// ============================================================================
+// 2. OZIQ-OVQAT OMBOR DAFTARI VA UMUMIY HISOBOT BOSHQARUVI (EXCEL ASOSIDA)
+// ============================================================================
+let foodLedgerData = [...FOOD_PRODUCTS_LEDGER];
+let currentWhMode = 'ledger'; // 'ledger' or 'report'
+let selectedProductId = 'gosht_mol';
+let currentReportCat = 'all';
+let currentReportSearch = '';
+
+function loadWarehouseLedgerData() {
+    const saved = localStorage.getItem('dmtt57_food_ledger_custom');
+    if (saved) {
+        try {
+            foodLedgerData = JSON.parse(saved);
+        } catch (e) {
+            foodLedgerData = [...FOOD_PRODUCTS_LEDGER];
+        }
+    } else {
+        foodLedgerData = [...FOOD_PRODUCTS_LEDGER];
+    }
+}
+
+function saveWarehouseLedgerData() {
+    localStorage.setItem('dmtt57_food_ledger_custom', JSON.stringify(foodLedgerData));
+}
+
+function initWarehouseSection() {
+    loadWarehouseLedgerData();
+    populateProductSelectDropdown();
+    if (currentWhMode === 'ledger') {
+        renderProductLedger(selectedProductId);
+    } else {
+        renderWarehouseReport(currentReportCat, currentReportSearch);
+    }
+}
+
+function switchWarehouseMode(mode) {
+    currentWhMode = mode;
+    const viewLedger = document.getElementById('wh-view-ledger');
+    const viewReport = document.getElementById('wh-view-report');
+    const btnLedger = document.getElementById('btn-wh-mode-ledger');
+    const btnReport = document.getElementById('btn-wh-mode-report');
+
+    if (mode === 'ledger') {
+        if (viewLedger) viewLedger.classList.remove('hidden');
+        if (viewReport) viewReport.classList.add('hidden');
+        if (btnLedger) {
+            btnLedger.className = "px-4 py-2 rounded-xl text-xs font-black bg-amber-500 text-white shadow-md flex items-center gap-2 transition";
+        }
+        if (btnReport) {
+            btnReport.className = "px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 flex items-center gap-2 transition";
+        }
+        renderProductLedger(selectedProductId);
+    } else {
+        if (viewLedger) viewLedger.classList.add('hidden');
+        if (viewReport) viewReport.classList.remove('hidden');
+        if (btnReport) {
+            btnReport.className = "px-4 py-2 rounded-xl text-xs font-black bg-blue-600 text-white shadow-md flex items-center gap-2 transition";
+        }
+        if (btnLedger) {
+            btnLedger.className = "px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 flex items-center gap-2 transition";
+        }
+        renderWarehouseReport(currentReportCat, currentReportSearch);
+    }
+}
+
+function populateProductSelectDropdown() {
+    const sel = document.getElementById('wh-product-select');
+    if (!sel) return;
+    sel.innerHTML = foodLedgerData.map(p => {
+        return `<option value="${p.id}" ${p.id === selectedProductId ? 'selected' : ''}>${p.name} (${p.currentStock} ${p.unit})</option>`;
+    }).join('');
+}
+
+function selectWarehouseProduct(productId) {
+    selectedProductId = productId;
+    const sel = document.getElementById('wh-product-select');
+    if (sel) sel.value = productId;
+    switchWarehouseMode('ledger');
+    renderProductLedger(productId);
+}
+
+function renderProductLedger(productId) {
+    const p = foodLedgerData.find(item => item.id === productId) || foodLedgerData[0];
+    if (!p) return;
+    selectedProductId = p.id;
+
+    // 1. Update Passport Card
+    const nameEl = document.getElementById('ledger-product-name');
+    const catEl = document.getElementById('ledger-product-category');
+    const unitEl = document.getElementById('ledger-product-unit');
+    const stockEl = document.getElementById('ledger-product-stock');
+    const initStockEl = document.getElementById('ledger-product-init-stock');
+    const totalInEl = document.getElementById('ledger-product-total-in');
+    const totalOutEl = document.getElementById('ledger-product-total-out');
+    const priceEl = document.getElementById('ledger-product-price');
+    const totalValueEl = document.getElementById('ledger-product-total-value');
+    const tempEl = document.getElementById('ledger-product-temp');
+    const managerEl = document.getElementById('ledger-product-manager');
+
+    if (nameEl) nameEl.innerText = p.name;
+    if (catEl) catEl.innerText = p.categoryName;
+    if (unitEl) unitEl.innerText = p.unit;
+    if (stockEl) stockEl.innerText = `${p.currentStock.toLocaleString()} ${p.unit}`;
+    if (initStockEl) initStockEl.innerText = `${p.initStock.toLocaleString()} ${p.unit}`;
+    if (totalInEl) totalInEl.innerText = `${p.totalIn.toLocaleString()} ${p.unit}`;
+    if (totalOutEl) totalOutEl.innerText = `${p.totalOut.toLocaleString()} ${p.unit}`;
+    if (priceEl) priceEl.innerText = `${p.price.toLocaleString()} so'm / ${p.unit}`;
+    if (totalValueEl) totalValueEl.innerText = `${(p.currentStock * p.price).toLocaleString()} so'm`;
+    if (tempEl) tempEl.innerText = p.temp || "Rejim bo'yicha";
+    if (managerEl) managerEl.innerText = p.manager || "Qambarova Nazira To'xtasinovna";
+
+    // 2. Render Ledger Table (exact columns of ombor daftari.xlsx)
+    const tbody = document.getElementById('ledger-table-tbody');
+    if (!tbody) return;
+
+    if (!p.ledger || p.ledger.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center py-6 text-slate-400">
+                    Ushbu mahsulot bo'yicha hali yozuvlar kiritilmagan.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = p.ledger.map((e, idx) => {
+        const inStr = e.inQty > 0 ? `<span class="font-extrabold text-emerald-600">+${e.inQty.toLocaleString()} ${p.unit}</span>` : `<span class="text-slate-300">-</span>`;
+        const outStr = e.outQty > 0 ? `<span class="font-extrabold text-red-600">-${e.outQty.toLocaleString()} ${p.unit}</span>` : `<span class="text-slate-300">-</span>`;
+
+        return `
+            <tr class="hover:bg-slate-50/80 transition border-b border-slate-100">
+                <td class="p-3 text-center text-slate-400 font-bold text-[11px]">${idx + 1}</td>
+                <td class="p-3 font-medium text-slate-700 whitespace-nowrap text-[11px]">${e.date}</td>
+                <td class="p-3 font-semibold text-slate-900 text-xs">${e.supplier}</td>
+                <td class="p-3"><span class="font-mono text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-bold">${e.invoice}</span></td>
+                <td class="p-3 text-right font-medium text-slate-700 text-xs">${e.price.toLocaleString()} so'm</td>
+                <td class="p-3 text-right text-xs">${inStr}</td>
+                <td class="p-3 text-right text-xs">${outStr}</td>
+                <td class="p-3 text-right font-black text-slate-900 text-xs bg-slate-50/50">${e.balance.toLocaleString()} ${p.unit}</td>
+                <td class="p-3 text-right font-extrabold text-blue-700 text-xs">${(e.summa || (e.balance * e.price)).toLocaleString()} so'm</td>
+            </tr>
+        `;
+    }).join('');
+
+    // Update Footer Totals
+    const tfootIn = document.getElementById('ledger-foot-total-in');
+    const tfootOut = document.getElementById('ledger-foot-total-out');
+    const tfootStock = document.getElementById('ledger-foot-stock');
+    const tfootSumma = document.getElementById('ledger-foot-summa');
+
+    if (tfootIn) tfootIn.innerText = `${p.totalIn.toLocaleString()} ${p.unit}`;
+    if (tfootOut) tfootOut.innerText = `${p.totalOut.toLocaleString()} ${p.unit}`;
+    if (tfootStock) tfootStock.innerText = `${p.currentStock.toLocaleString()} ${p.unit}`;
+    if (tfootSumma) tfootSumma.innerText = `${(p.currentStock * p.price).toLocaleString()} so'm`;
+}
+
+function openAddLedgerReceiptModal() {
+    const p = foodLedgerData.find(item => item.id === selectedProductId);
+    if (!p) return;
+
+    const nameEl = document.getElementById('receipt-modal-product-name');
+    const unitEl = document.getElementById('receipt-modal-unit-label');
+    const supplierEl = document.getElementById('receipt-modal-supplier');
+    const priceEl = document.getElementById('receipt-modal-price');
+    const dateEl = document.getElementById('receipt-modal-date');
+
+    if (nameEl) nameEl.innerText = p.name;
+    if (unitEl) unitEl.innerText = p.unit;
+    if (supplierEl) supplierEl.value = p.supplierDefault || "Ta'minotchi MChJ";
+    if (priceEl) priceEl.value = p.price;
+    if (dateEl) dateEl.value = new Date().toISOString().slice(0, 10);
+
+    const modal = document.getElementById('modal-add-ledger-receipt');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeAddLedgerReceiptModal() {
+    const modal = document.getElementById('modal-add-ledger-receipt');
+    if (modal) modal.classList.add('hidden');
+}
+
+function submitLedgerReceipt(e) {
+    e.preventDefault();
+    const p = foodLedgerData.find(item => item.id === selectedProductId);
+    if (!p) return;
+
+    const rawDate = document.getElementById('receipt-modal-date')?.value;
+    const supplier = document.getElementById('receipt-modal-supplier')?.value?.trim() || p.supplierDefault;
+    const invoice = document.getElementById('receipt-modal-invoice')?.value?.trim() || "YX-" + Math.floor(100 + Math.random()*900);
+    const inQty = parseFloat(document.getElementById('receipt-modal-qty')?.value) || 0;
+    const price = parseFloat(document.getElementById('receipt-modal-price')?.value) || p.price;
+    const note = document.getElementById('receipt-modal-note')?.value?.trim() || "Yangi partiya kirimi";
+
+    if (inQty <= 0) {
+        alert("Iltimos, kirim miqdorini to'g'ri kiriting!");
+        return;
+    }
+
+    let dateFormatted = rawDate;
+    if (rawDate && rawDate.includes('-')) {
+        const parts = rawDate.split('-');
+        dateFormatted = `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+
+    const newBalance = p.currentStock + inQty;
+    const newSumma = newBalance * price;
+
+    p.ledger.push({
+        date: dateFormatted,
+        supplier: supplier,
+        invoice: invoice,
+        price: price,
+        inQty: inQty,
+        outQty: 0,
+        balance: newBalance,
+        summa: newSumma,
+        note: note
+    });
+
+    p.currentStock = newBalance;
+    p.totalIn += inQty;
+    p.price = price;
+    p.totalValue = newBalance * price;
+    p.status = "Yetarli";
+
+    saveWarehouseLedgerData();
+    renderProductLedger(selectedProductId);
+    closeAddLedgerReceiptModal();
+    showToast(`вњ… "${p.name}" bo'yicha ${inQty} ${p.unit} kirim daftarga qayd etildi!`);
+}
+
+function openAddLedgerIssueModal() {
+    const p = foodLedgerData.find(item => item.id === selectedProductId);
+    if (!p) return;
+
+    const nameEl = document.getElementById('issue-modal-product-name');
+    const unitEl = document.getElementById('issue-modal-unit-label');
+    const maxQtyEl = document.getElementById('issue-modal-max-stock');
+    const dateEl = document.getElementById('issue-modal-date');
+
+    if (nameEl) nameEl.innerText = p.name;
+    if (unitEl) unitEl.innerText = p.unit;
+    if (maxQtyEl) maxQtyEl.innerText = `${p.currentStock} ${p.unit}`;
+    if (dateEl) dateEl.value = new Date().toISOString().slice(0, 10);
+
+    const modal = document.getElementById('modal-add-ledger-issue');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeAddLedgerIssueModal() {
+    const modal = document.getElementById('modal-add-ledger-issue');
+    if (modal) modal.classList.add('hidden');
+}
+
+function submitLedgerIssue(e) {
+    e.preventDefault();
+    const p = foodLedgerData.find(item => item.id === selectedProductId);
+    if (!p) return;
+
+    const rawDate = document.getElementById('issue-modal-date')?.value;
+    const invoice = document.getElementById('issue-modal-invoice')?.value?.trim() || "TL-" + Math.floor(10 + Math.random()*90);
+    const outQty = parseFloat(document.getElementById('issue-modal-qty')?.value) || 0;
+    const note = document.getElementById('issue-modal-note')?.value?.trim() || "Oshxona kundalik taomlari uchun";
+
+    if (outQty <= 0) {
+        alert("Iltimos, chiqim miqdorini to'g'ri kiriting!");
+        return;
+    }
+    if (outQty > p.currentStock) {
+        alert(`Omborda yetarli qoldiq mavjud emas! Joriy qoldiq: ${p.currentStock} ${p.unit}`);
+        return;
+    }
+
+    let dateFormatted = rawDate;
+    if (rawDate && rawDate.includes('-')) {
+        const parts = rawDate.split('-');
+        dateFormatted = `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+
+    const newBalance = p.currentStock - outQty;
+    const newSumma = newBalance * p.price;
+
+    p.ledger.push({
+        date: dateFormatted,
+        supplier: "Oshxona talabnomasi",
+        invoice: invoice,
+        price: p.price,
+        inQty: 0,
+        outQty: outQty,
+        balance: newBalance,
+        summa: newSumma,
+        note: note
+    });
+
+    p.currentStock = newBalance;
+    p.totalOut += outQty;
+    p.totalValue = newBalance * p.price;
+    p.status = newBalance <= 0 ? "Tugagan" : (newBalance < (p.initStock * 0.3) ? "Kamaymoqda" : "Yetarli");
+
+    saveWarehouseLedgerData();
+    renderProductLedger(selectedProductId);
+    closeAddLedgerIssueModal();
+    showToast(`рџ“¤ "${p.name}" bo'yicha ${outQty} ${p.unit} oshxonaga chiqim qilindi!`);
+}
+
+function exportCurrentProductLedgerToExcel() {
+    const p = foodLedgerData.find(item => item.id === selectedProductId);
+    if (!p) return;
+
+    let csv = `\uFEFF57-DMTT OMBOR DAFTARI: ${p.name.toUpperCase()}\n`;
+    csv += `O'lchov birligi: ${p.unit}, Mas'ul: ${p.manager}\n\n`;
+    csv += `в„–,Sana,Ta'minotchi korxona nomi,Yuk xati / Talabnoma,Narxi (so'm),Kirim,Chiqim,Qoldiq,Summasi (so'm),Izoh\n`;
+
+    p.ledger.forEach((e, idx) => {
+        csv += `"${idx+1}","${e.date}","${e.supplier}","${e.invoice}","${e.price}","${e.inQty}","${e.outQty}","${e.balance}","${e.summa}","${e.note}"\n`;
+    });
+
+    csv += `\n"JAMI","","","","","${p.totalIn}","${p.totalOut}","${p.currentStock}","${p.totalValue}",""\n`;
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", `Ombor_Daftari_${p.id}_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(`рџ“Ґ "${p.name}" ombor daftari Excelga yuklab olindi!`);
+}
+
+function printCurrentProductLedger() {
+    const p = foodLedgerData.find(item => item.id === selectedProductId);
+    if (!p) return;
+
+    const printWin = window.open('', '_blank');
+    if (!printWin) {
+        alert("Brauzer chop etish oynasini blokladi. Iltimos, ruxsat bering.");
+        return;
+    }
+
+    const rowsHtml = p.ledger.map((e, idx) => `
+        <tr>
+            <td style="border:1px solid #333; padding:5px; text-align:center;">${idx+1}</td>
+            <td style="border:1px solid #333; padding:5px; text-align:center;">${e.date}</td>
+            <td style="border:1px solid #333; padding:5px;">${e.supplier}</td>
+            <td style="border:1px solid #333; padding:5px; text-align:center;">${e.invoice}</td>
+            <td style="border:1px solid #333; padding:5px; text-align:right;">${e.price.toLocaleString()} so'm</td>
+            <td style="border:1px solid #333; padding:5px; text-align:right; font-weight:bold;">${e.inQty > 0 ? e.inQty + ' ' + p.unit : '-'}</td>
+            <td style="border:1px solid #333; padding:5px; text-align:right; font-weight:bold;">${e.outQty > 0 ? e.outQty + ' ' + p.unit : '-'}</td>
+            <td style="border:1px solid #333; padding:5px; text-align:right; font-weight:bold;">${e.balance} ${p.unit}</td>
+            <td style="border:1px solid #333; padding:5px; text-align:right; font-weight:bold;">${e.summa.toLocaleString()} so'm</td>
+        </tr>
+    `).join('');
+
+    printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Ombor Daftari - ${p.name}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; font-size: 11pt; color: #111; }
+                h2, h3, p { margin: 4px 0; }
+                table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                th { background: #f0f0f0; border: 1px solid #333; padding: 6px; font-size: 10pt; }
+                .sign-block { display: flex; justify-content: space-between; margin-top: 40px; font-size: 11pt; }
+            </style>
+        </head>
+        <body>
+            <div style="text-align:center; border-bottom: 2px solid #333; padding-bottom: 10px;">
+                <h3>FARG'ONA SHAHAR 57-SONLI DAVLAT MAKTABGACHA TA'LIM TASHKILOTI</h3>
+                <h2>ELEKTRON OMBOR DAFTARI (OZIQ-OVQAT MAHSULOTI KARTASI)</h2>
+                <p><strong>Mahsulot nomi:</strong> ${p.name} | <strong>O'lchov birligi:</strong> ${p.unit} | <strong>Davr:</strong> Sentabr 2026</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>в„–</th>
+                        <th>Sana</th>
+                        <th>Ta'minotchi korxona nomi</th>
+                        <th>Yuk xati / Talabnoma</th>
+                        <th>Narxi</th>
+                        <th>Kirim</th>
+                        <th>Chiqim</th>
+                        <th>Qoldiq</th>
+                        <th>Summasi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight:bold; background:#fafafa;">
+                        <td colspan="5" style="border:1px solid #333; padding:6px; text-align:right;">JAMI VA OXIRGI QOLDIQ:</td>
+                        <td style="border:1px solid #333; padding:6px; text-align:right;">${p.totalIn} ${p.unit}</td>
+                        <td style="border:1px solid #333; padding:6px; text-align:right;">${p.totalOut} ${p.unit}</td>
+                        <td style="border:1px solid #333; padding:6px; text-align:right;">${p.currentStock} ${p.unit}</td>
+                        <td style="border:1px solid #333; padding:6px; text-align:right;">${(p.currentStock * p.price).toLocaleString()} so'm</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="sign-block">
+                <div>
+                    <p>Muassasa direktori: _________________ <strong>Raxmonova D.A.</strong></p>
+                    <p style="margin-top:20px;">Bosh oshpaz: _________________ <strong>Djuraeva S.M.</strong></p>
+                </div>
+                <div>
+                    <p>Xo'jalik mudiri (Omborchi): _________________ <strong>Qambarova N.T.</strong></p>
+                    <p style="margin-top:20px;">Hamshira: _________________ <strong>Djuraeva D.Sh.</strong></p>
+                </div>
+            </div>
+            <script>window.onload = function() { window.print(); };<\/script>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
+}
+
+
+// ----------------------------------------------------------------------------
+// 2.2. UMUMIY HISOBOT (SVOD REPORT)
+// ----------------------------------------------------------------------------
+function renderWarehouseReport(filterCat = 'all', searchQuery = '') {
+    currentReportCat = filterCat;
+    currentReportSearch = searchQuery.toLowerCase().trim();
+
+    // 1. Calculate overall summary KPIs
+    let totalItemsCount = foodLedgerData.length;
+    let totalInSum = 0;
+    let totalOutSum = 0;
+    let totalStockSum = 0;
+
+    foodLedgerData.forEach(p => {
+        totalInSum += (p.totalIn * p.price);
+        totalOutSum += (p.totalOut * p.price);
+        totalStockSum += (p.currentStock * p.price);
+    });
+
+    const kpiCountEl = document.getElementById('report-kpi-total-items');
+    const kpiInEl = document.getElementById('report-kpi-total-in-sum');
+    const kpiOutEl = document.getElementById('report-kpi-total-out-sum');
+    const kpiStockEl = document.getElementById('report-kpi-total-stock-sum');
+
+    if (kpiCountEl) kpiCountEl.innerText = `${totalItemsCount} ta tur`;
+    if (kpiInEl) kpiInEl.innerText = `${Math.round(totalInSum / 1000).toLocaleString()} ming so'm`;
+    if (kpiOutEl) kpiOutEl.innerText = `${Math.round(totalOutSum / 1000).toLocaleString()} ming so'm`;
+    if (kpiStockEl) kpiStockEl.innerText = `${Math.round(totalStockSum / 1000).toLocaleString()} ming so'm`;
+
+    // 2. Filter products
+    let filtered = foodLedgerData;
+    if (filterCat !== 'all') {
+        filtered = filtered.filter(p => p.category === filterCat);
+    }
+    if (currentReportSearch) {
+        filtered = filtered.filter(p => 
+            p.name.toLowerCase().includes(currentReportSearch) ||
+            p.categoryName.toLowerCase().includes(currentReportSearch)
+        );
+    }
+
+    const tbody = document.getElementById('warehouse-report-tbody');
+    if (!tbody) return;
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="12" class="text-center py-8 text-slate-400">
+                    <i class="fa-solid fa-box-open text-2xl mb-2 text-slate-300"></i>
+                    <p class="font-bold text-sm">Ushbu parametrlar bo'yicha mahsulot topilmadi</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = filtered.map((p, idx) => {
+        let catBadge = "bg-slate-100 text-slate-700";
+        if (p.category === 'gosht') catBadge = "bg-red-100 text-red-800 font-bold";
+        else if (p.category === 'sut') catBadge = "bg-blue-100 text-blue-800 font-bold";
+        else if (p.category === 'don') catBadge = "bg-amber-100 text-amber-800 font-bold";
+        else if (p.category === 'yog') catBadge = "bg-yellow-100 text-yellow-800 font-bold";
+        else if (p.category === 'sabzavot') catBadge = "bg-emerald-100 text-emerald-800 font-bold";
+        else if (p.category === 'tuxum') catBadge = "bg-orange-100 text-orange-800 font-bold";
+
+        let statusBadge = "bg-emerald-100 text-emerald-800 font-bold";
+        if (p.status === 'Kamaymoqda') statusBadge = "bg-amber-100 text-amber-800 font-bold";
+        else if (p.status === 'Tugagan') statusBadge = "bg-red-100 text-red-800 font-bold";
+
+        const stockSum = p.currentStock * p.price;
+
+        return `
+            <tr class="hover:bg-slate-50/90 transition border-b border-slate-100">
+                <td class="p-3 text-center text-slate-400 font-bold text-[11px]">${idx + 1}</td>
+                <td class="p-3">
+                    <div class="font-bold text-slate-900 text-xs">${p.name}</div>
+                    <div class="text-[10px] text-slate-400">${p.supplierDefault}</div>
+                </td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] ${catBadge}">${p.categoryName}</span></td>
+                <td class="p-3 text-center font-bold text-slate-500 text-xs">${p.unit}</td>
+                <td class="p-3 text-right text-slate-600 font-medium text-xs">${p.initStock.toLocaleString()} ${p.unit}</td>
+                <td class="p-3 text-right font-bold text-emerald-600 text-xs">+${p.totalIn.toLocaleString()} ${p.unit}</td>
+                <td class="p-3 text-right font-bold text-red-600 text-xs">-${p.totalOut.toLocaleString()} ${p.unit}</td>
+                <td class="p-3 text-right font-black text-slate-900 text-xs bg-slate-50/80">${p.currentStock.toLocaleString()} ${p.unit}</td>
+                <td class="p-3 text-right font-medium text-slate-600 text-xs">${p.price.toLocaleString()} so'm</td>
+                <td class="p-3 text-right font-extrabold text-blue-700 text-xs">${stockSum.toLocaleString()} so'm</td>
+                <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] ${statusBadge}">${p.status}</span></td>
+                <td class="p-3 text-center">
+                    <button onclick="selectWarehouseProduct('${p.id}')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-[10px] transition flex items-center gap-1 mx-auto">
+                        <i class="fa-solid fa-book-open text-[9px]"></i> Daftari
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function filterReportCategory(category) {
+    document.querySelectorAll('.report-cat-btn').forEach(btn => {
+        btn.className = "report-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition";
+    });
+    const activeBtn = document.getElementById(`report-cat-${category}`);
+    if (activeBtn) {
+        activeBtn.className = "report-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white transition shadow-sm";
+    }
+    renderWarehouseReport(category, currentReportSearch);
+}
+
+function handleReportSearch(query) {
+    renderWarehouseReport(currentReportCat, query);
+}
+
+function exportWarehouseReportToExcel() {
+    let csv = "\uFEFF57-DMTT OZIQ-OVQAT MAHSULOTLARI OMBOR DAFTARI UMUMIY HISOBOTI (SVOD)\n";
+    csv += "Davr: Sentabr 2026 oyi holatiga\n\n";
+    csv += "в„–,Mahsulot nomi,Toifasi,O'lchov birligi,Oy boshiga qoldiq,Jami Kirim,Jami Chiqim (Sarf),Joriy Qoldiq,Narxi (so'm),Qoldiq qiymati (so'm),Holati\n";
+
+    let totalStockSum = 0;
+    foodLedgerData.forEach((p, idx) => {
+        const sumVal = p.currentStock * p.price;
+        totalStockSum += sumVal;
+        csv += `"${idx+1}","${p.name}","${p.categoryName}","${p.unit}","${p.initStock}","${p.totalIn}","${p.totalOut}","${p.currentStock}","${p.price}","${sumVal}","${p.status}"\n`;
+    });
+
+    csv += `\n"JAMI","","","","","","","","","${totalStockSum}",""\n`;
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", `57_DMTT_Ombor_Umumiy_Hisoboti_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("рџ“Ґ Oziq-ovqat omborining umumiy hisoboti Excelga yuklab olindi!");
+}
+
+function printWarehouseReport() {
+    const printWin = window.open('', '_blank');
+    if (!printWin) {
+        alert("Brauzer chop etish oynasini blokladi. Iltimos, ruxsat bering.");
+        return;
+    }
+
+    let totalStockSum = 0;
+    const rowsHtml = foodLedgerData.map((p, idx) => {
+        const sumVal = p.currentStock * p.price;
+        totalStockSum += sumVal;
+        return `
+            <tr>
+                <td style="border:1px solid #333; padding:5px; text-align:center;">${idx+1}</td>
+                <td style="border:1px solid #333; padding:5px; font-weight:bold;">${p.name}</td>
+                <td style="border:1px solid #333; padding:5px;">${p.categoryName}</td>
+                <td style="border:1px solid #333; padding:5px; text-align:center;">${p.unit}</td>
+                <td style="border:1px solid #333; padding:5px; text-align:right;">${p.initStock}</td>
+                <td style="border:1px solid #333; padding:5px; text-align:right; font-weight:bold;">${p.totalIn}</td>
+                <td style="border:1px solid #333; padding:5px; text-align:right; font-weight:bold;">${p.totalOut}</td>
+                <td style="border:1px solid #333; padding:5px; text-align:right; font-weight:bold;">${p.currentStock}</td>
+                <td style="border:1px solid #333; padding:5px; text-align:right;">${p.price.toLocaleString()}</td>
+                <td style="border:1px solid #333; padding:5px; text-align:right; font-weight:bold;">${sumVal.toLocaleString()}</td>
+                <td style="border:1px solid #333; padding:5px; text-align:center;">${p.status}</td>
+            </tr>
+        `;
+    }).join('');
+
+    printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>57-DMTT Oziq-ovqat Ombor Daftari Umumiy Hisoboti</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 25px; font-size: 10pt; color: #111; }
+                h2, h3, p { margin: 4px 0; }
+                table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                th { background: #f0f0f0; border: 1px solid #333; padding: 5px; font-size: 9pt; }
+                .sign-block { display: flex; justify-content: space-between; margin-top: 40px; font-size: 11pt; }
+            </style>
+        </head>
+        <body>
+            <div style="text-align:center; border-bottom: 2px solid #333; padding-bottom: 8px;">
+                <h3>O'ZBEKISTON RESPUBLIKASI MAKTABGACHA VA MAKTAB TA'LIMI VAZIRLIGI</h3>
+                <h3>FARG'ONA SHAHAR 57-SONLI DAVLAT MAKTABGACHA TA'LIM TASHKILOTI</h3>
+                <h2>OZIQ-OVQAT MAHSULOTLARI OMBOR DAFTARI UMUMIY HISOBOTI (SVOD)</h2>
+                <p><strong>Davr:</strong> Sentabr 2026 oyi holatiga | <strong>Jami mahsulot turlari:</strong> 24 ta tur</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>в„–</th>
+                        <th>Mahsulot nomi</th>
+                        <th>Toifasi</th>
+                        <th>Birligi</th>
+                        <th>Oy boshiga qoldiq</th>
+                        <th>Jami Kirim</th>
+                        <th>Jami Chiqim</th>
+                        <th>Joriy Qoldiq</th>
+                        <th>Narxi (so'm)</th>
+                        <th>Qoldiq Qiymati (so'm)</th>
+                        <th>Holati</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight:bold; background:#fafafa;">
+                        <td colspan="9" style="border:1px solid #333; padding:6px; text-align:right;">UMUMIY OMBOR QOLDIG'I SUMMASI:</td>
+                        <td style="border:1px solid #333; padding:6px; text-align:right; font-size:11pt;">${totalStockSum.toLocaleString()} so'm</td>
+                        <td style="border:1px solid #333; padding:6px;"></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="sign-block">
+                <div>
+                    <p>Muassasa direktori: _________________ <strong>Raxmonova D.A.</strong></p>
+                    <p style="margin-top:20px;">Bosh oshpaz: _________________ <strong>Djuraeva S.M.</strong></p>
+                </div>
+                <div>
+                    <p>Xo'jalik mudiri: _________________ <strong>Qambarova N.T.</strong></p>
+                    <p style="margin-top:20px;">Hamshira: _________________ <strong>Djuraeva D.Sh.</strong></p>
+                </div>
+            </div>
+            <script>window.onload = function() { window.print(); };<\/script>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
+}
+
+// ============================================================================
+// HAMSHIRA BO'LIMI SUB-NAVIGATSIYASI (5 TA ICHKI TUGMA)
+// ============================================================================
+function filterNurseView(subId) {
+    document.querySelectorAll('.nurse-sub-nav-btn').forEach(btn => {
+        btn.className = "nurse-sub-nav-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition";
+    });
+    const activeBtn = document.getElementById(`nurse-subbtn-${subId}`);
+    if (activeBtn) {
+        activeBtn.className = "nurse-sub-nav-btn px-4 py-2 rounded-xl text-xs font-bold bg-blue-50 text-blue-700 hover:bg-blue-100 flex items-center gap-2 transition border border-blue-200 shadow-xs";
+    }
+
+    document.querySelectorAll('.nurse-sub-section').forEach(sec => sec.classList.add('hidden'));
+    const target = document.getElementById(`nurse-view-${subId}`);
+    if (target) {
+        target.classList.remove('hidden');
+    }
+}
+
+// ============================================================================
+// 3. TAB VA VIEW BOSHQARUVI
+// ============================================================================
+function switchNav(tabId, el) {
+    updateDynamicSectionBanner(tabId);
+    document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+    
+    // Tugmani aktiv qilish
+    const navBtn = document.getElementById(`nav-btn-${tabId}`);
+    if (navBtn) {
+        navBtn.classList.add('active');
+    } else if (el) {
+        el.classList.add('active');
+    }
+
+    const overviewEl = document.getElementById('overview-sections');
+    const dedicatedContainer = document.getElementById('dedicated-section-container');
+    const scrollArea = document.getElementById('main-scroll-area');
+
+    if (tabId === 'home') {
+        overviewEl.classList.remove('hidden');
+        dedicatedContainer.classList.add('hidden');
+    } else {
+        overviewEl.classList.add('hidden');
+        dedicatedContainer.classList.remove('hidden');
+        
+        document.querySelectorAll('.dedicated-tab').forEach(tab => tab.classList.add('hidden'));
+        
+        const target = document.getElementById(`dedicated-${tabId}`);
+        if (target) {
+            target.classList.remove('hidden');
+            if (tabId === 'groups') {
+                renderDedicatedGroups();
+    renderDevelopmentSection();
+            } else if (tabId === 'attendance') {
+                const groupSelect = document.getElementById('dedicated-att-group');
+                const grp = (currentUser && currentUser.role === 'teacher') ? currentUser.group : (groupSelect ? groupSelect.value : '1-kichik');
+                changeAttendanceGroup(grp);
+            } else if (tabId === 'activities') {
+                renderActivityGallery();
+            } else if (tabId === 'curriculum') {
+                renderCurriculumPlans();
+            } else if (tabId === 'cleaning') {
+                renderCleaningTasks();
+            } else if (tabId === 'development') {
+                renderDevelopmentSection();
+            } else if (tabId === 'staff') {
+                initStaffSection();
+            } else if (tabId === 'warehouse') {
+                initStaffSection();
+    initWarehouseSection();
+    renderWarehouseReport('all');
+            } else if (tabId === 'nurse') {
+                filterNurseView('muhit');
+            }
+        } else {
+            console.warn(`Tab "dedicated-${tabId}" topilmadi!`);
+        }
+    }
+
+    if (scrollArea) {
+        scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Header nomini yangilash
+    const titles = {
+        home: "Boshqaruv Paneli (Dashboard)",
+        students: "Tarbiyalanuvchilar Bazasi",
+        groups: "11 ta Guruh va Tarbiyachilar",
+        staff: "Xodimlar va Rahbariyat",
+        attendance: "Kunlik Davomat & FaceID",
+        kitchen: "Oziq-ovqat va Oshxona Nazorati",
+        tasks: "Vazifalar va Ijro Nazorati",
+        documents: "Hujjatlar va Normativ Baza",
+        reports: "Hisobotlar va Tahliliy Statistika",
+        monitoring: "Pedagogik va Sanitariya Monitoringi",
+        parents: "Ota-onalar Bilan Aloqa",
+        messages: "Xabarlar va Murojaatlar",
+        settings: "Tashkilot va Tizim Sozlamalari",
+        nurse: "Hamshira Brokeraj Daftarlari",
+        warehouse: "Xo'jalik Mudiri (Ombor)",
+        activities: "Mashg'ulotlardan Fotolavhalar",
+        curriculum: "Metodik Rejalar va Mashg'ulot Dasturlari",
+        cleaning: "Tozalik va Obodonlashtirish Topshiriqlari",
+        development: "Bolalar Rivojlanish Xaritasi va Monitoringi"
+    };
+    const titleEl = document.getElementById('page-title');
+    if (titleEl && titles[tabId]) titleEl.innerText = titles[tabId];
+}
+
+// ============================================================================
+// 3. FACEID BIOMETRIK DAVOMAT SKANERI
+// ============================================================================
+let webcamStream = null;
+let scanAnimationTimer = null;
+
+function startFaceIdScanner() {
+    const modal = document.getElementById('modal-face-id');
+    if (!modal) return;
+
+    modal.classList.remove('hidden');
+    const resultBox = document.getElementById('face-scan-result-card');
+    if (resultBox) resultBox.classList.add('hidden');
+
+    const videoEl = document.getElementById('face-video-feed');
+    const canvasEl = document.getElementById('face-canvas-feed');
+    const statusText = document.getElementById('face-scan-status');
+
+    if (statusText) statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-emerald-500 mr-2"></i> Kamera faollashtirilmoqda va yuz izlanmoqda...';
+
+    // Jonli kamera olishga harakat qilish
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && videoEl) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                webcamStream = stream;
+                videoEl.srcObject = stream;
+                videoEl.play();
+                videoEl.classList.remove('hidden');
+                if (canvasEl) canvasEl.classList.add('hidden');
+            })
+            .catch(err => {
+                console.log("Webcam ruxsati berilmadi yoki kamera yo'q, simulyatsiya rejimi:", err);
+                useCanvasSimulation(canvasEl, videoEl);
+            });
+    } else {
+        useCanvasSimulation(canvasEl, videoEl);
+    }
+}
+
+function useCanvasSimulation(canvasEl, videoEl) {
+    if (videoEl) videoEl.classList.add('hidden');
+    if (!canvasEl) return;
+    canvasEl.classList.remove('hidden');
+    const ctx = canvasEl.getContext('2d');
+    canvasEl.width = 400;
+    canvasEl.height = 300;
+
+    // Sun'iy fon chizish
+    ctx.fillStyle = "#0f172a";
+    ctx.fillRect(0, 0, 400, 300);
+    ctx.fillStyle = "#334155";
+    ctx.font = "14px 'Plus Jakarta Sans', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("📷 Jonli AI Biometrik Kamera Tayyor", 200, 150);
+}
+
+function stopFaceIdScanner() {
+    if (webcamStream) {
+        webcamStream.getTracks().forEach(track => track.stop());
+        webcamStream = null;
+    }
+    if (scanAnimationTimer) {
+        clearTimeout(scanAnimationTimer);
+        scanAnimationTimer = null;
+    }
+    const modal = document.getElementById('modal-face-id');
+    if (modal) modal.classList.add('hidden');
+}
+
+// FACEID ANIQLASH TUGMASI BOSILGANDA
+function triggerFaceRecognition() {
+    const statusText = document.getElementById('face-scan-status');
+    const resultBox = document.getElementById('face-scan-result-card');
+    
+    if (statusText) {
+        statusText.innerHTML = '<span class="text-amber-400 font-bold"><i class="fa-solid fa-brain fa-pulse mr-2"></i> Neyrotarmoq yuz parametrlarini tahlil qilmoqda...</span>';
+    }
+
+    // 1 soniya tahlil effekti
+    scanAnimationTimer = setTimeout(() => {
+        // Joriy guruhdagi bolalardan birini topish (afzali hozir kelmagan yoki navbatdagi bola)
+        const currentGroupName = (currentUser && currentUser.role === 'teacher') 
+            ? currentUser.group 
+            : (document.getElementById('dedicated-att-group')?.value || '1-kichik');
+
+        const students = GROUP_STUDENTS_DATA[currentGroupName] || GROUP_STUDENTS_DATA["1-kichik"];
+        const targetStudent = students.find(s => s.status !== 'Keldi') || students[0];
+
+        if (!targetStudent) {
+            showToast("Guruhdagi barcha bolalar allaqachon belgilangan!");
+            return;
+        }
+
+        // Bolani "Keldi" qilish
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        targetStudent.status = "Keldi";
+        targetStudent.time = timeStr;
+        targetStudent.reason = "-";
+
+        // Natija kartasini chiqarish
+        if (resultBox) {
+            resultBox.classList.remove('hidden');
+            resultBox.classList.add('scan-success-pulse');
+            resultBox.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <img src="${targetStudent.avatar}" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-500 shadow-md">
+                        <span class="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-1 text-[10px]"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="text-left flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-extrabold text-sm text-slate-900">${targetStudent.name}</h4>
+                            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full">99.4% Moslik</span>
+                        </div>
+                        <p class="text-xs text-slate-500 font-medium">Guruh: <b>"${currentGroupName}"</b> • Vaqt: <b>${timeStr}</b></p>
+                        <p class="text-[11px] text-emerald-700 font-bold mt-1">✓ Davomat qayd etildi va ota-onaga SMS yuborildi</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        if (statusText) {
+            statusText.innerHTML = '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check mr-1.5"></i> Yuz muvaffaqiyatli tanildi!</span>';
+        }
+
+        // Davomat jadvalini yangilash
+        changeAttendanceGroup(currentGroupName);
+        showToast(`✅ FaceID: ${targetStudent.name} davomati qayd etildi (${timeStr})!`);
+
+    }, 1200);
+}
+
+// FOTO YUKLASH ORQALI FACEID ISHLATISH
+function handleFacePhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const videoEl = document.getElementById('face-video-feed');
+        const canvasEl = document.getElementById('face-canvas-feed');
+        if (videoEl) videoEl.classList.add('hidden');
+        if (canvasEl) {
+            canvasEl.classList.remove('hidden');
+            const ctx = canvasEl.getContext('2d');
+            const img = new Image();
+            img.onload = function() {
+                canvasEl.width = 400;
+                canvasEl.height = 300;
+                ctx.drawImage(img, 0, 0, 400, 300);
+                triggerFaceRecognition();
+            };
+            img.src = e.target.result;
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+// ============================================================================
+// 4. DAVOMAT RO'YXATI VA GURUHNI ALMASHTIRISH
+// ============================================================================
+function changeAttendanceGroup(groupName) {
+    const tbody = document.getElementById('dedicated-attendance-tbody');
+    if (!tbody) return;
+
+    const students = GROUP_STUDENTS_DATA[groupName] || GROUP_STUDENTS_DATA["1-kichik"] || [];
+    tbody.innerHTML = '';
+
+    let presentCount = 0;
+    let absentCount = 0;
+
+    students.forEach((s, idx) => {
+        const isPresent = s.status === 'Keldi';
+        if (isPresent) presentCount++; else absentCount++;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+        tr.innerHTML = `
+            <td class="p-3 font-semibold text-slate-500">${idx + 1}</td>
+            <td class="p-3 font-bold text-slate-900 text-sm flex items-center gap-2.5">
+                <div class="relative">
+                    <img src="${s.avatar}" class="w-8 h-8 rounded-full object-cover">
+                    ${s.faceRegistered ? '<span class="absolute -bottom-1 -right-1 bg-blue-500 text-white rounded-full text-[8px] p-0.5" title="FaceID faol"><i class="fa-solid fa-fingerprint"></i></span>' : ''}
+                </div>
+                <div>
+                    <span>${s.name}</span>
+                    <span class="block text-[10px] text-slate-400 font-normal">Tug'ilgan: ${s.dob}</span>
+                </div>
+            </td>
+            <td class="p-3 text-center">
+                <div class="inline-flex rounded-xl p-1 bg-slate-100 border border-slate-200">
+                    <button onclick="toggleAttendance(${s.id}, 'Keldi', '${groupName}')" class="px-3 py-1 text-xs font-bold rounded-lg transition ${isPresent ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
+                        <i class="fa-solid fa-check mr-1 text-[10px]"></i> Keldi ${s.time && s.time !== '-' ? `<span class="opacity-80 text-[10px]">(${s.time})</span>` : ''}
+                    </button>
+                    <button onclick="toggleAttendance(${s.id}, 'Kelmadi', '${groupName}')" class="px-3 py-1 text-xs font-bold rounded-lg transition ${!isPresent ? 'bg-red-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
+                        <i class="fa-solid fa-xmark mr-1 text-[10px]"></i> Kelmadi
+                    </button>
+                </div>
+            </td>
+            <td class="p-3">
+                <select onchange="updateAttendanceReason(${s.id}, this.value, '${groupName}')" class="border border-slate-200 rounded-lg p-1 text-xs font-medium bg-white text-slate-700 outline-none">
+                    <option value="-" ${s.reason === '-' ? 'selected' : ''}>-</option>
+                    <option value="Sababli" ${s.reason === 'Sababli' ? 'selected' : ''}>Sababli</option>
+                    <option value="Sababsiz" ${s.reason === 'Sababsiz' ? 'selected' : ''}>Sababsiz</option>
+                    <option value="Ta'tilda" ${s.reason === "Ta'tilda" ? 'selected' : ''}>Ta'tilda</option>
+                </select>
+            </td>
+            <td class="p-3">
+                <input type="text" value="${s.note || ''}" placeholder="Izoh..." onchange="updateAttendanceNote(${s.id}, this.value, '${groupName}')" class="border border-slate-200 rounded-lg px-2 py-1 text-xs text-slate-700 outline-none w-36">
+            </td>
+            <td class="p-3 text-center">
+                <span class="inline-flex items-center gap-1 font-semibold text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    <i class="fa-solid fa-bell text-[10px]"></i> Xabardor
+                </span>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    const total = students.length;
+    const rate = total > 0 ? Math.round((presentCount / total) * 100) : 0;
+
+    const totalEl = document.getElementById('stat-group-total');
+    const presentEl = document.getElementById('stat-group-present');
+    const absentEl = document.getElementById('stat-group-absent');
+
+    if (totalEl) totalEl.innerText = total;
+    if (presentEl) presentEl.innerText = `${presentCount} (${rate}%)`;
+    if (absentEl) absentEl.innerText = absentCount;
+}
+
+function toggleAttendance(studentId, newStatus, groupName) {
+    const list = GROUP_STUDENTS_DATA[groupName];
+    if (!list) return;
+    const student = list.find(s => s.id === studentId);
+    if (student) {
+        student.status = newStatus;
+        if (newStatus === 'Keldi') {
+            const now = new Date();
+            student.time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            student.reason = "-";
+        } else {
+            student.time = "-";
+            if (student.reason === '-') student.reason = "Sababli";
+        }
+        changeAttendanceGroup(groupName);
+        showToast(`✅ ${student.name} davomati yangilandi: ${newStatus}`);
+    }
+}
+
+function updateAttendanceReason(studentId, reason, groupName) {
+    const list = GROUP_STUDENTS_DATA[groupName];
+    if (!list) return;
+    const student = list.find(s => s.id === studentId);
+    if (student) {
+        student.reason = reason;
+        showToast(`Sabab yangilandi: ${reason}`);
+    }
+}
+
+function updateAttendanceNote(studentId, note, groupName) {
+    const list = GROUP_STUDENTS_DATA[groupName];
+    if (!list) return;
+    const student = list.find(s => s.id === studentId);
+    if (student) {
+        student.note = note;
+    }
+}
+
+function markAllAttendance(status) {
+    const currentGroupName = (currentUser && currentUser.role === 'teacher') 
+        ? currentUser.group 
+        : (document.getElementById('dedicated-att-group')?.value || '1-kichik');
+
+    const students = GROUP_STUDENTS_DATA[currentGroupName];
+    if (students) {
+        students.forEach(s => {
+            s.status = status;
+            s.time = status === 'Keldi' ? "08:15" : "-";
+            if (status === 'Keldi') s.reason = "-";
+        });
+        changeAttendanceGroup(currentGroupName);
+        showToast(`✨ Barcha bolalar davomati "${status}" deb belgilandi!`);
+    }
+}
+
+function saveDedicatedAttendance() {
+    showToast("💾 Davomat muvaffaqiyatli saqlandi va ota-onalar tizimiga yuklandi!");
+}
+
+// ============================================================================
+// 5. MASHG'ULOTLARDAN RASMLAR YUKLASH (TARBIYACHILAR VA RAHBARIYAT UCHUN)
+// ============================================================================
+function renderActivityGallery(filterGroup) {
+    const container = document.getElementById('activity-gallery-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+    
+    const activeGroup = filterGroup || (currentUser && currentUser.role === 'teacher' ? currentUser.group : 'Barchasi');
+
+    const filtered = activeGroup === 'Barchasi' 
+        ? ACTIVITY_PHOTOS 
+        : ACTIVITY_PHOTOS.filter(p => p.group === activeGroup);
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div class="col-span-full py-12 text-center text-slate-400">
+                <i class="fa-solid fa-images text-4xl mb-3 opacity-40"></i>
+                <p class="font-bold text-sm">Hozircha ushbu guruh uchun mashg'ulot rasmlari yuklanmagan.</p>
+                <p class="text-xs mt-1">Yangi mashg'ulot fotosini yuklash uchun yuqoridagi tugmani bosing.</p>
+            </div>
+        `;
+        return;
+    }
+
+    filtered.forEach(photo => {
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col group";
+        card.innerHTML = `
+            <div class="h-44 w-full relative overflow-hidden bg-slate-100">
+                <img src="${photo.img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-xs text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                    <i class="fa-solid fa-shapes text-amber-400"></i> ${photo.group}
+                </div>
+                <div class="absolute top-2.5 right-2.5 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    ${photo.category}
+                </div>
+            </div>
+            <div class="p-4 flex-1 flex flex-col justify-between space-y-2 text-xs">
+                <div>
+                    <h4 class="font-black text-slate-900 text-sm leading-snug">${photo.title}</h4>
+                    <p class="text-slate-500 text-[11px] mt-1 line-clamp-2">${photo.desc}</p>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-slate-400 text-[10px] font-semibold">
+                    <span><i class="fa-solid fa-user-pen mr-1"></i> ${photo.teacher}</span>
+                    <span><i class="fa-solid fa-calendar mr-1"></i> ${photo.date}</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function openAddActivityModal() {
+    const modal = document.getElementById('modal-add-activity');
+    if (!modal) return;
+    
+    // Tarbiyachi bo'lsa guruhini o'rnatish
+    const grpSelect = document.getElementById('new-act-group');
+    if (grpSelect && currentUser && currentUser.role === 'teacher') {
+        grpSelect.value = currentUser.group;
+        grpSelect.disabled = true;
+    } else if (grpSelect) {
+        grpSelect.disabled = false;
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function addNewActivityAction() {
+    const title = document.getElementById('new-act-title')?.value.trim();
+    const grp = document.getElementById('new-act-group')?.value || (currentUser ? currentUser.group : '1-kichik');
+    const category = document.getElementById('new-act-category')?.value || "Ijodiy faoliyat";
+    const desc = document.getElementById('new-act-desc')?.value.trim() || "Mashg'ulot muvaffaqiyatli o'tkazildi.";
+    const imgFile = document.getElementById('new-act-file')?.files[0];
+
+    if (!title) {
+        alert("Iltimos, mashg'ulot nomini kiriting!");
+        return;
+    }
+
+    const newPhoto = {
+        id: Date.now(),
+        title: title,
+        group: grp,
+        teacher: currentUser ? currentUser.name : "Tarbiyachi",
+        category: category,
+        date: new Date().toLocaleDateString('ru-RU'),
+        img: imgFile ? URL.createObjectURL(imgFile) : "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=600&auto=format&fit=crop&q=80",
+        desc: desc
+    };
+
+    ACTIVITY_PHOTOS.unshift(newPhoto);
+    closeModal('modal-add-activity');
+    renderActivityGallery();
+    showToast("📸 Mashg'ulot fotosurati muvaffaqiyatli yuklandi va tasdiqlandi!");
+}
+
+// ============================================================================
+// 6. METODIK REJALAR VA MASHG'ULOT DASTURLARI (O'RINBOSAR / METODIST)
+// ============================================================================
+function renderCurriculumPlans() {
+    const tbody = document.getElementById('curriculum-plans-tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    CURRICULUM_PLANS.forEach((plan, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100 text-xs";
+        tr.innerHTML = `
+            <td class="p-3 font-semibold text-slate-400">${idx + 1}</td>
+            <td class="p-3">
+                <div class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf text-red-500 text-base"></i>
+                    <span>${plan.title}</span>
+                </div>
+                <span class="text-[10px] text-slate-400">Fayl: ${plan.file}</span>
+            </td>
+            <td class="p-3 font-bold text-indigo-700">${plan.type}</td>
+            <td class="p-3 font-medium text-slate-700">${plan.groups}</td>
+            <td class="p-3 text-slate-500">${plan.date}</td>
+            <td class="p-3"><span class="badge-active">${plan.status}</span></td>
+            <td class="p-3 text-center">
+                <button onclick="showToast('📥 ${plan.file} yuklab olinmoqda...')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-xl font-bold cursor-pointer transition">
+                    <i class="fa-solid fa-download mr-1"></i> Yuklab olish (${plan.downloads})
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function openAddCurriculumModal() {
+    openModal('modal-add-curriculum');
+}
+
+function addNewCurriculumAction() {
+    const title = document.getElementById('new-plan-title')?.value.trim();
+    const type = document.getElementById('new-plan-type')?.value || "Kunlik reja";
+    const groups = document.getElementById('new-plan-groups')?.value || "Barcha guruhlar";
+    const date = document.getElementById('new-plan-date')?.value || new Date().toLocaleDateString('ru-RU');
+
+    if (!title) {
+        alert("Reja nomini kiriting!");
+        return;
+    }
+
+    CURRICULUM_PLANS.unshift({
+        id: Date.now(),
+        title: title,
+        type: type,
+        groups: groups,
+        author: currentUser ? currentUser.name : "O'rinbosar",
+        date: date,
+        status: "Tasdiqlangan",
+        file: title.toLowerCase().replace(/ /g, '_') + '.pdf',
+        downloads: 0
+    });
+
+    closeModal('modal-add-curriculum');
+    renderCurriculumPlans();
+    showToast("📚 Yangi metodik reja tizimga yuklandi va tarbiyachilarga yuborildi!");
+}
+
+// ============================================================================
+// 7. TOZALIK VA OBODONLASHTIRISH TOPSHIRIQLARI (XO'JALIK MUDIRI / OMBORCHI)
+// ============================================================================
+function renderCleaningTasks() {
+    const container = document.getElementById('cleaning-tasks-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+    CLEANING_TASKS.forEach(task => {
+        const isDone = task.status === 'Bajarildi';
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-2xl border transition ${isDone ? 'bg-emerald-50/50 border-emerald-200' : 'bg-white border-slate-200 shadow-xs'}`;
+        card.innerHTML = `
+            <div class="flex items-start justify-between gap-3">
+                <div class="space-y-1 flex-1">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${task.priority === "O'ta muhim" ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}">${task.priority}</span>
+                        <span class="text-xs text-slate-400 font-medium">Kimdan: <b>${task.assigner}</b></span>
+                    </div>
+                    <h4 class="font-extrabold text-sm ${isDone ? 'line-through text-slate-400' : 'text-slate-900'}">${task.title}</h4>
+                    <p class="text-xs text-slate-500">${task.notes}</p>
+                    <p class="text-[11px] font-semibold text-slate-400 pt-1"><i class="fa-solid fa-clock mr-1"></i> Muddat: ${task.deadline}</p>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <button onclick="toggleCleaningTaskStatus(${task.id})" class="px-3 py-1.5 rounded-xl font-bold text-xs cursor-pointer transition ${isDone ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-emerald-100 hover:text-emerald-700'}">
+                        ${isDone ? '<i class="fa-solid fa-circle-check mr-1"></i> Bajarilgan' : '<i class="fa-regular fa-circle mr-1"></i> Bajarildi qilish'}
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function toggleCleaningTaskStatus(taskId) {
+    const task = CLEANING_TASKS.find(t => t.id === taskId);
+    if (task) {
+        task.status = task.status === 'Bajarildi' ? 'Jarayonda' : 'Bajarildi';
+        renderCleaningTasks();
+        showToast(`Topshiriq holati: "${task.status}" deb belgilandi!`);
+    }
+}
+
+// ============================================================================
+// 8. 11 TA GURUHLAR RO'YXATINI DEDICATED CARDS GA RENDERING QILISH
+// ============================================================================
+function renderDedicatedGroups() {
+    const container = document.getElementById('dedicated-groups-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+    GROUPS_META.forEach(grp => {
+        const div = document.createElement('div');
+        div.className = "dashboard-card flex flex-col justify-between hover:border-blue-300 transition group cursor-pointer";
+        div.onclick = () => {
+            const sel = document.getElementById('dedicated-att-group');
+            if (sel && (!currentUser || currentUser.role !== 'teacher')) {
+                sel.value = grp.name;
+                switchNav('attendance');
+            }
+        };
+
+        div.innerHTML = `
+            <div>
+                <div class="h-28 rounded-xl overflow-hidden mb-3 relative">
+                    <img src="${grp.img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    <span class="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">${grp.age}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <h4 class="font-extrabold text-base text-slate-900">${grp.name}</h4>
+                    <i class="fa-solid ${grp.icon} ${grp.color} text-lg"></i>
+                </div>
+                <p class="text-xs text-slate-500 font-semibold mt-1">Tarbiyachi: <span class="text-slate-800">${grp.teacher}</span></p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+                <span class="text-slate-600">Sig'imi: <b>${grp.count} nafar</b></span>
+                <span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">Davomat: ${grp.att}%</span>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// ============================================================================
+// 9. CHART.JS GRAFIKLARI
+// ============================================================================
+let attendanceChartInstance = null;
+let ageChartInstance = null;
+
+function initCharts() {
+    const attCtx = document.getElementById('attendanceChart');
+    if (attCtx) {
+        const gradient = attCtx.getContext('2d').createLinearGradient(0, 0, 0, 160);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.45)');
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
+
+        attendanceChartInstance = new Chart(attCtx, {
+            type: 'line',
+            data: {
+                labels: ['15 Sen', '16 Sen', '17 Sen', '18 Sen', '19 Sen', '20 Sen', '21 Sen'],
+                datasets: [{
+                    label: 'Davomat foizi',
+                    data: [87, 89, 90, 92, 91, 93, 91],
+                    borderColor: '#3b82f6',
+                    backgroundColor: gradient,
+                    borderWidth: 2.5,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#2563eb',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.parsed.y}% davomat`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20,
+                            callback: (v) => v + '%',
+                            font: { size: 10 },
+                            color: '#64748b'
+                        },
+                        grid: {
+                            color: '#f1f5f9',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { size: 10 },
+                            color: '#64748b'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    const ageCtx = document.getElementById('ageDonutChart');
+    if (ageCtx) {
+        const centerTextPlugin = {
+            id: 'centerTextPlugin',
+            beforeDraw(chart) {
+                const { width, height, ctx } = chart;
+                ctx.restore();
+                const fontSize = (height / 114).toFixed(2);
+                ctx.font = `bold ${fontSize}em 'Plus Jakarta Sans', sans-serif`;
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#0f172a';
+
+                const text = '186';
+                const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                const textY = height / 2 - 4;
+                ctx.fillText(text, textX, textY);
+
+                ctx.font = `500 0.65em 'Plus Jakarta Sans', sans-serif`;
+                ctx.fillStyle = '#64748b';
+                const subText = 'Jami bola';
+                const subX = Math.round((width - ctx.measureText(subText).width) / 2);
+                ctx.fillText(subText, subX, textY + 16);
+                ctx.save();
+            }
+        };
+
+        ageChartInstance = new Chart(ageCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['2-3 yosh', '3-4 yosh', '4-5 yosh', '5-6 yosh'],
+                datasets: [{
+                    data: [58, 43, 69, 73],
+                    backgroundColor: ['#10b981', '#3b82f6', '#f97316', '#8b5cf6'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => ` ${ctx.label}: ${ctx.parsed} nafar`
+                        }
+                    }
+                }
+            },
+            plugins: [centerTextPlugin]
+        });
+    }
+}
+
+function openGroupAttendance(groupName) {
+    switchNav('attendance');
+    const sel = document.getElementById('dedicated-att-group');
+    if (sel) {
+        sel.value = groupName;
+        changeAttendanceGroup(groupName);
+    }
+}
+
+function filterOverviewAttendance(status) {
+    showToast(`Filtr: ${status} bo'yicha saralandi`);
+}
+
+function saveAttendance() {
+    showToast("💾 Davomat muvaffaqiyatli saqlandi!");
+}
+
+function handleGlobalSearch(e) {
+    const val = e.target.value.toLowerCase().trim();
+    if (e.key === 'Enter' && val) {
+        showToast(`🔍 "${val}" bo'yicha qidiruv amalga oshirildi`);
+    }
+}
+
+function filterDedicatedStudents() {
+    const searchVal = document.getElementById('ded-search-student')?.value.toLowerCase().trim() || '';
+    const groupVal = document.getElementById('ded-filter-group')?.value || 'Barchasi';
+
+    const rows = document.querySelectorAll('#ded-students-tbody tr');
+    rows.forEach(tr => {
+        const name = tr.getAttribute('data-name')?.toLowerCase() || '';
+        const group = tr.getAttribute('data-group') || '';
+
+        const matchesName = name.includes(searchVal);
+        const matchesGroup = (groupVal === 'Barchasi') || (group === groupVal);
+
+        if (matchesName && matchesGroup) {
+            tr.style.display = '';
+        } else {
+            tr.style.display = 'none';
+        }
+    });
+}
+
+function filterStudents() {
+    // Overview ichidagi qidiruv
+    const searchVal = document.getElementById('overview-student-search')?.value.toLowerCase().trim() || '';
+    const rows = document.querySelectorAll('#overview-students-tbody tr');
+    rows.forEach(tr => {
+        const name = tr.querySelector('td:nth-child(2)')?.innerText.toLowerCase() || '';
+        if (name.includes(searchVal)) {
+            tr.style.display = '';
+        } else {
+            tr.style.display = 'none';
+        }
+    });
+}
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.add('hidden');
+}
+
+function showToast(msg) {
+    let toast = document.getElementById('app-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'app-toast';
+        toast.className = "fixed bottom-5 right-5 z-[99999] bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs font-bold transition duration-300 transform translate-y-20 opacity-0";
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-circle-info"></i></span> <span>${msg}</span>`;
+    toast.classList.remove('translate-y-20', 'opacity-0');
+
+    setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+    }, 3500);
+}
+
+function exportReport(type) {
+    showToast(`📊 57-DMTT ${type.toUpperCase()} hisoboti shakllantirildi va yuklab olindi!`);
+}
+
+function toggleTaskStatus(el) {
+    if (el.classList.contains('bg-slate-100')) {
+        el.className = "badge-active";
+        el.innerText = "Bajarildi";
+        showToast("✓ Vazifa 'Bajarildi' deb belgilandi!");
+    } else {
+        el.className = "bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full cursor-pointer";
+        el.innerText = "Bajarilmoqda";
+        showToast("⏳ Vazifa 'Bajarilmoqda' holatiga qaytarildi");
+    }
+}
+
+function addNewGroupAction() {
+    closeModal('modal-add-group');
+    showToast("🎉 Yangi guruh va tarbiyachi tizimga muvaffaqiyatli biriktirildi!");
+}
+
+function addNewTaskAction() {
+    const title = document.getElementById('new-task-title')?.value;
+    if (title) {
+        closeModal('modal-add-task');
+        showToast(`📋 Yangi vazifa biriktirildi: "${title}"`);
+    } else {
+        alert("Vazifa nomini yozing!");
+    }
+}
+
+function setupEventListeners() {
+    // Esc tugmasi bosilganda modallarni yopish
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
+            stopFaceIdScanner();
+        }
+    });
+}
+
+
+// ============================================================================
+// KO'RSATKICHLAR VA RAQAMLAR ADMIN PANELI (MARKAZIY STATISTIKA VA LOCALSTORAGE)
+// ============================================================================
+const DEFAULT_SYSTEM_STATS = {
+    totalStudents: 186,
+    boysCount: 98,
+    girlsCount: 88,
+    totalGroups: 11,
+    totalStaff: 42,
+    vacantStaff: 3,
+    todayAttendancePercent: 91,
+    presentStudents: 169,
+    todayFoodPercent: 100,
+    dailyFoodCostPerChild: 14500,
+    meatStockKg: 85,
+    milkStockL: 120,
+    flourStockKg: 210,
+    vegetableStockKg: 160,
+    medicalCheckupPercent: 96,
+    devHighPercent: 68,
+    devMediumPercent: 27,
+    devInitialPercent: 5
+};
+
+let SYSTEM_STATS = { ...DEFAULT_SYSTEM_STATS };
+
+function loadSystemStats() {
+    const saved = localStorage.getItem('dmtt57_platform_stats');
+    if (saved) {
+        try {
+            SYSTEM_STATS = Object.assign({}, DEFAULT_SYSTEM_STATS, JSON.parse(saved));
+        } catch (e) {
+            console.error("Stats parse error:", e);
+        }
+    }
+}
+
+function updateAllDisplayedStats() {
+    // 1. Dashboard KPI bloklari
+    const kpiStudents = document.getElementById('kpi-val-students');
+    const kpiSubStudents = document.getElementById('kpi-sub-students');
+    if (kpiStudents) kpiStudents.innerText = SYSTEM_STATS.totalStudents;
+    if (kpiSubStudents) kpiSubStudents.innerText = `O'g'il: ${SYSTEM_STATS.boysCount} | Qiz: ${SYSTEM_STATS.girlsCount}`;
+
+    const kpiGroups = document.getElementById('kpi-val-groups');
+    const kpiSubGroups = document.getElementById('kpi-sub-groups');
+    if (kpiGroups) kpiGroups.innerText = SYSTEM_STATS.totalGroups;
+    if (kpiSubGroups) kpiSubGroups.innerText = `${SYSTEM_STATS.totalGroups} ta to'liq faol guruh`;
+
+    const kpiStaff = document.getElementById('kpi-val-staff');
+    const kpiSubStaff = document.getElementById('kpi-sub-staff');
+    if (kpiStaff) kpiStaff.innerText = SYSTEM_STATS.totalStaff;
+    if (kpiSubStaff) kpiSubStaff.innerText = `${SYSTEM_STATS.vacantStaff} ta vakant o'rin`;
+
+    const kpiAtt = document.getElementById('kpi-val-attendance');
+    const kpiSubAtt = document.getElementById('kpi-sub-attendance');
+    if (kpiAtt) kpiAtt.innerText = `${SYSTEM_STATS.todayAttendancePercent}%`;
+    if (kpiSubAtt) kpiSubAtt.innerText = `${SYSTEM_STATS.presentStudents} / ${SYSTEM_STATS.totalStudents} kishi kelgan`;
+
+    const kpiFood = document.getElementById('kpi-val-kitchen');
+    const kpiSubFood = document.getElementById('kpi-sub-kitchen');
+    if (kpiFood) kpiFood.innerText = `${SYSTEM_STATS.todayFoodPercent}%`;
+    if (kpiSubFood) kpiSubFood.innerText = `1 bolaga: ${SYSTEM_STATS.dailyFoodCostPerChild.toLocaleString()} so'm`;
+
+    // 2. Rivojlanish xaritasi umumiy ko'rsatkichlari
+    const devHighEl = document.getElementById('dev-stat-high');
+    const devMedEl = document.getElementById('dev-stat-medium');
+    const devInitEl = document.getElementById('dev-stat-initial');
+    const devTotalEl = document.getElementById('dev-stat-total');
+    if (devHighEl) devHighEl.innerText = `${SYSTEM_STATS.devHighPercent}%`;
+    if (devMedEl) devMedEl.innerText = `${SYSTEM_STATS.devMediumPercent}%`;
+    if (devInitEl) devInitEl.innerText = `${SYSTEM_STATS.devInitialPercent}%`;
+    if (devTotalEl) devTotalEl.innerText = `${SYSTEM_STATS.totalStudents} nafar`;
+
+    // 3. Omborxona qoldiqlari
+    const meatEl = document.getElementById('stock-meat-val');
+    const milkEl = document.getElementById('stock-milk-val');
+    const flourEl = document.getElementById('stock-flour-val');
+    const vegEl = document.getElementById('stock-veg-val');
+    if (meatEl) meatEl.innerText = `${SYSTEM_STATS.meatStockKg} kg`;
+    if (milkEl) milkEl.innerText = `${SYSTEM_STATS.milkStockL} L`;
+    if (flourEl) flourEl.innerText = `${SYSTEM_STATS.flourStockKg} kg`;
+    if (vegEl) vegEl.innerText = `${SYSTEM_STATS.vegetableStockKg} kg`;
+}
+
+function openStatsAdminModal() {
+    loadSystemStats();
+    const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val;
+    };
+    setVal('admin-stat-total-students', SYSTEM_STATS.totalStudents);
+    setVal('admin-stat-boys', SYSTEM_STATS.boysCount);
+    setVal('admin-stat-girls', SYSTEM_STATS.girlsCount);
+    setVal('admin-stat-groups', SYSTEM_STATS.totalGroups);
+    setVal('admin-stat-staff', SYSTEM_STATS.totalStaff);
+    setVal('admin-stat-vacant', SYSTEM_STATS.vacantStaff);
+    setVal('admin-stat-att-percent', SYSTEM_STATS.todayAttendancePercent);
+    setVal('admin-stat-att-present', SYSTEM_STATS.presentStudents);
+    setVal('admin-stat-food-percent', SYSTEM_STATS.todayFoodPercent);
+    setVal('admin-stat-food-cost', SYSTEM_STATS.dailyFoodCostPerChild);
+    setVal('admin-stat-stock-meat', SYSTEM_STATS.meatStockKg);
+    setVal('admin-stat-stock-milk', SYSTEM_STATS.milkStockL);
+    setVal('admin-stat-stock-flour', SYSTEM_STATS.flourStockKg);
+    setVal('admin-stat-stock-veg', SYSTEM_STATS.vegetableStockKg);
+    setVal('admin-stat-med-checkup', SYSTEM_STATS.medicalCheckupPercent);
+    setVal('admin-stat-dev-high', SYSTEM_STATS.devHighPercent);
+    setVal('admin-stat-dev-med', SYSTEM_STATS.devMediumPercent);
+    setVal('admin-stat-dev-init', SYSTEM_STATS.devInitialPercent);
+
+    openModal('modal-stats-admin');
+}
+
+function saveCustomStats(e) {
+    if (e) e.preventDefault();
+    const getNum = (id, fallback) => {
+        const el = document.getElementById(id);
+        if (!el) return fallback;
+        const val = parseFloat(el.value);
+        return isNaN(val) ? fallback : val;
+    };
+
+    SYSTEM_STATS.totalStudents = getNum('admin-stat-total-students', SYSTEM_STATS.totalStudents);
+    SYSTEM_STATS.boysCount = getNum('admin-stat-boys', SYSTEM_STATS.boysCount);
+    SYSTEM_STATS.girlsCount = getNum('admin-stat-girls', SYSTEM_STATS.girlsCount);
+    SYSTEM_STATS.totalGroups = getNum('admin-stat-groups', SYSTEM_STATS.totalGroups);
+    SYSTEM_STATS.totalStaff = getNum('admin-stat-staff', SYSTEM_STATS.totalStaff);
+    SYSTEM_STATS.vacantStaff = getNum('admin-stat-vacant', SYSTEM_STATS.vacantStaff);
+    SYSTEM_STATS.todayAttendancePercent = getNum('admin-stat-att-percent', SYSTEM_STATS.todayAttendancePercent);
+    SYSTEM_STATS.presentStudents = getNum('admin-stat-att-present', SYSTEM_STATS.presentStudents);
+    SYSTEM_STATS.todayFoodPercent = getNum('admin-stat-food-percent', SYSTEM_STATS.todayFoodPercent);
+    SYSTEM_STATS.dailyFoodCostPerChild = getNum('admin-stat-food-cost', SYSTEM_STATS.dailyFoodCostPerChild);
+    SYSTEM_STATS.meatStockKg = getNum('admin-stat-stock-meat', SYSTEM_STATS.meatStockKg);
+    SYSTEM_STATS.milkStockL = getNum('admin-stat-stock-milk', SYSTEM_STATS.milkStockL);
+    SYSTEM_STATS.flourStockKg = getNum('admin-stat-stock-flour', SYSTEM_STATS.flourStockKg);
+    SYSTEM_STATS.vegetableStockKg = getNum('admin-stat-stock-veg', SYSTEM_STATS.vegetableStockKg);
+    SYSTEM_STATS.medicalCheckupPercent = getNum('admin-stat-med-checkup', SYSTEM_STATS.medicalCheckupPercent);
+    SYSTEM_STATS.devHighPercent = getNum('admin-stat-dev-high', SYSTEM_STATS.devHighPercent);
+    SYSTEM_STATS.devMediumPercent = getNum('admin-stat-dev-med', SYSTEM_STATS.devMediumPercent);
+    SYSTEM_STATS.devInitialPercent = getNum('admin-stat-dev-init', SYSTEM_STATS.devInitialPercent);
+
+    localStorage.setItem('dmtt57_platform_stats', JSON.stringify(SYSTEM_STATS));
+    updateAllDisplayedStats();
+    closeModal('modal-stats-admin');
+    showToast("✅ Barcha ko'rsatkichlar va raqamlar muvaffaqiyatli saqlandi hamda saytda yangilandi!");
+}
+
+function resetStatsToDefault() {
+    if (confirm("Haqiqatan ham barcha ko'rsatkichlarni standart qiymatlarga qaytarmoqchimisiz?")) {
+        SYSTEM_STATS = { ...DEFAULT_SYSTEM_STATS };
+        localStorage.removeItem('dmtt57_platform_stats');
+        updateAllDisplayedStats();
+        closeModal('modal-stats-admin');
+        showToast("🔄 Standart ko'rsatkichlar qayta tiklandi!");
+    }
+}
+
+// ============================================================================
+// 57-DMTT: YOSHGA DOIR RIVOJLANISH XARITALARI MA'LUMOTLAR BAZASI
+// "Ilk qadam" davlat o'quv dasturi va yosh mezonlari asosida
+// ============================================================================
+
+const DEV_AGE_GROUPS = {
+    kichik: {
+        title: "Kichik guruh (3-4 yosh)",
+        badge: "3-4 yosh",
+        desc: "Kichik guruh tarbiyalanuvchilarining jismoniy, ruhiy va ijtimoiy ko'nikmalarini dastlabki shakllantirish davri",
+        groups: ["1-kichik", "2-kichik", "3-kichik"],
+        domains: [
+            {
+                id: "jismoniy",
+                code: "1",
+                name: "Jismoniy rivojlanish va sog'lom turmush tarzi",
+                icon: "fa-person-running",
+                color: "emerald",
+                subdomains: [
+                    {
+                        name: "Yirik motorika",
+                        criteria: [
+                            { code: "1.1.1", text: "Mustaqil ravishda oyoq uchida muvozanatni saqlagan holda yurish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.1.2", text: "Kattalarning yordamida 5-10 sm balandlikdagi to'siqlardan qadam tashlab o'tish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.1.3", text: "Bittadan va juft bo'lib, qo'l ushlashib safda yurish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.1.4", text: "Oldinga va orqaga muvozanat saqlagan holda yugurish", initial: "T", mid: "T", final: "D" },
+                            { code: "1.1.5", text: "Kattalar yordamida gimnastika taxtasi yoki sport jihozlari bo'ylab tirmashib chiqish", initial: "K", mid: "B", final: "T" },
+                            { code: "1.1.6", text: "Kattalar yordamida tutqichni ushlab, zinadan ko'tarilish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.1.7", text: "Joyida va oldinga harakatlanib, ikki oyoqda sakrash", initial: "B", mid: "T", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Mayda motorika",
+                        criteria: [
+                            { code: "1.2.1", text: "Qog'ozni turli o'lchamdagi bo'laklarga bo'lib yirtish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.2.2", text: "Kattalar yordamida tugmalarni qadash va katta zamoklarni ochib-yopish", initial: "B", mid: "T", final: "T" },
+                            { code: "1.2.3", text: "Kattalar yordamida qaychida ma'lum shakllarsiz qog'oz bo'laklarini qirqish", initial: "K", mid: "B", final: "T" },
+                            { code: "1.2.4", text: "To'pni ikki qo'llab ilib olish va belgilangan yo'nalishga otish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.2.5", text: "Pazl va kubiklardan (4-6 qismli) oddiy shakllarni yig'ish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Sog'lom turmush tarzi va xavfsizlik",
+                        criteria: [
+                            { code: "1.3.1", text: "Ovqatlanishdan oldin va hojatdan so'ng qo'llarni sovunlab yuvish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.3.2", text: "Dastro'molcha va sochiqdan to'g'ri foydalanish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.3.3", text: "Kattalar yordamida mustaqil kiyinish va poyabzalini yechish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "ijtimoiy",
+                code: "2",
+                name: "Ijtimoiy-hissiy rivojlanish",
+                icon: "fa-people-roof",
+                color: "amber",
+                subdomains: [
+                    {
+                        name: "'Men' konsepsiyasi va o'zlikni anglash",
+                        criteria: [
+                            { code: "2.1.1", text: "O'z ismini, jinsini va yaqin oila a'zolarini to'g'ri ayta olish", initial: "T", mid: "D", final: "D" },
+                            { code: "2.1.2", text: "O'z buyumlarini, kiyimlarini boshqalarnikidan ajrata olish", initial: "T", mid: "D", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Hissiyotlar va tengdoshlar bilan muloqot",
+                        criteria: [
+                            { code: "2.2.1", text: "Xursandchilik, xafalik tuyg'ularini yuz ifodalari orqali namoyon qilish", initial: "T", mid: "D", final: "D" },
+                            { code: "2.2.2", text: "O'yinchoqlarni tengdoshlari bilan bo'lishish yoki navbat kutish", initial: "K", mid: "B", final: "T" },
+                            { code: "2.2.3", text: "Kattalar va tarbiyachi bilan tabassum bilan salomlashish va xayrlashish", initial: "T", mid: "D", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "nutq",
+                code: "3",
+                name: "Nutq, muloqot, o'qish va yozish ko'nikmalari",
+                icon: "fa-comments",
+                color: "blue",
+                subdomains: [
+                    {
+                        name: "Nutq va til boyligi",
+                        criteria: [
+                            { code: "3.1.1", text: "3-4 so'zdan iborat sodda gaplarni tuza olish", initial: "T", mid: "D", final: "D" },
+                            { code: "3.1.2", text: "Narsa va buyumlarning nomlarini to'g'ri aytish va ularni ko'rsatish", initial: "T", mid: "D", final: "D" },
+                            { code: "3.1.3", text: "Oddiy savollarga ('Bu nima?', 'Kim?') to'g'ri javob qaytarish", initial: "T", mid: "T", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Kitobga qiziqish va yozuv elementlari",
+                        criteria: [
+                            { code: "3.2.1", text: "Rasmli kitoblarni qiziqish bilan varaqlash va rasmlarni tushuntirish", initial: "B", mid: "T", final: "D" },
+                            { code: "3.2.2", text: "Qalamni to'g'ri ushlab, qog'ozda erkin chiziqlar (chizmachalar) qoldirish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "bilish",
+                code: "4",
+                name: "Bilish jarayonining rivojlanishi",
+                icon: "fa-brain",
+                color: "purple",
+                subdomains: [
+                    {
+                        name: "Elementar matematika va shakllar",
+                        criteria: [
+                            { code: "4.1.1", text: "Asosiy ranglarni (qizil, sariq, ko'k, yashil) farqlash va ajratish", initial: "B", mid: "T", final: "D" },
+                            { code: "4.1.2", text: "'Bitta' va 'ko'p' tushunchalarini amalda farqlash", initial: "T", mid: "D", final: "D" },
+                            { code: "4.1.3", text: "Doira va kvadrat shakllarini tanib olish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Atrof-olam va fazoviy tasavvurlar",
+                        criteria: [
+                            { code: "4.2.1", text: "Uy hayvonlari va ularning bolalarini rasmlarda tanish", initial: "T", mid: "D", final: "D" },
+                            { code: "4.2.2", text: "Katta va kichik o'lchamdagi buyumlarni solishtirish", initial: "T", mid: "D", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "ijodiy",
+                code: "5",
+                name: "Ijodiy rivojlanish",
+                icon: "fa-palette",
+                color: "pink",
+                subdomains: [
+                    {
+                        name: "Tasviriy faoliyat va musiqa",
+                        criteria: [
+                            { code: "5.1.1", text: "Ermakxamir (plastilin)dan dumaloq va cho'ziq shakllar yasash", initial: "B", mid: "T", final: "D" },
+                            { code: "5.1.2", text: "Musiqa ostida oddiy ritmik qarsaklar va harakatlarni takrorlash", initial: "T", mid: "D", final: "D" },
+                            { code: "5.1.3", text: "Eshitgan sodda qo'shiq jumlalarini tarbiyachi bilan birgalikda kuylash", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+
+    orta: {
+        title: "O'rta guruh (4-5 yosh)",
+        badge: "4-5 yosh",
+        desc: "O'rta guruh tarbiyalanuvchilarida ixtiyoriy diqqat, harakat koordinatsiyasi va nutqiy faollikni rivojlantirish",
+        groups: ["1-o'rta", "2-o'rta"],
+        domains: [
+            {
+                id: "jismoniy",
+                code: "1",
+                name: "Jismoniy rivojlanish va sog'lom turmush tarzi",
+                icon: "fa-person-running",
+                color: "emerald",
+                subdomains: [
+                    {
+                        name: "Yirik motorika",
+                        criteria: [
+                            { code: "1.1.1", text: "10 sm balandlikdagi to'siqlardan oshib o'tib yurish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.1.2", text: "Bittadan va juft bo'lib safda yurish, ikki kishilik kolonnaga tizilish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.1.3", text: "Tizzani baland ko'tarib yugurish, yo'nalish va tezlikni o'zgartira olish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.1.4", text: "Sport o'yin jihozlari bo'ylab bir oyoqda muvozanatni saqlash va sakrab o'tish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Mayda motorika",
+                        criteria: [
+                            { code: "1.2.1", text: "Qog'ozni belgilangan chiziq bo'yicha buklash va yirtish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.2.2", text: "O'rta o'lchamdagi tugmalarni mustaqil qadash va yechish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.2.3", text: "Qaychini to'g'ri ushlash va to'g'ri chiziq bo'ylab qog'ozni qirqish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.2.4", text: "To'pni polga yoki devorga urib, o'ng va chap qo'lda navbatma-navbat ilib olish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.2.5", text: "O'rta o'lchamdagi pazl va legolarni (10 tagacha qism) yig'ish", initial: "T", mid: "D", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Sog'lom turmush tarzi va xavfsizlik",
+                        criteria: [
+                            { code: "1.3.1", text: "Shaxsiy gigiyena qoidalariga mustaqil amal qilish (tish tozalash, qo'l yuvish)", initial: "T", mid: "D", final: "D" },
+                            { code: "1.3.2", text: "Xavfli buyumlar (o'tkir asboblar, issiq choynak) haqida tushunchaga ega bo'lish", initial: "T", mid: "D", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "ijtimoiy",
+                code: "2",
+                name: "Ijtimoiy-hissiy rivojlanish",
+                icon: "fa-people-roof",
+                color: "amber",
+                subdomains: [
+                    {
+                        name: "'Men' konsepsiyasi va jamoada ishlash",
+                        criteria: [
+                            { code: "2.1.1", text: "O'zining yoshi, oiladagi o'rni va uy manzilini sodda tushuntirish", initial: "B", mid: "T", final: "D" },
+                            { code: "2.1.2", text: "Tengdoshlari bilan birgalikda umumiy o'yin qoidalariga rioya qilish", initial: "B", mid: "T", final: "D" },
+                            { code: "2.1.3", text: "Birovga yordam berish va xayrixohlik bildirish", initial: "T", mid: "D", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "nutq",
+                code: "3",
+                name: "Nutq, muloqot, o'qish va yozish ko'nikmalari",
+                icon: "fa-comments",
+                color: "blue",
+                subdomains: [
+                    {
+                        name: "Nutqiy muloqot va lug'at",
+                        criteria: [
+                            { code: "3.1.1", text: "Tarbiyachi o'qib bergan ertak mazmunini 3-4 jumla bilan so'zlab berish", initial: "B", mid: "T", final: "D" },
+                            { code: "3.1.2", text: "Tovushlarni to'g'ri va aniq talaffuz qilish", initial: "B", mid: "T", final: "D" },
+                            { code: "3.1.3", text: "Kichik she'rlarni yoddan ifodali aytib bera olish", initial: "T", mid: "D", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Yozuv va o'qish elementlari",
+                        criteria: [
+                            { code: "3.2.1", text: "Rasm va belgilarni chapdan o'ngga qarab ketma-ketlikda ko'rsatish", initial: "T", mid: "D", final: "D" },
+                            { code: "3.2.2", text: "Nuqtalar bo'ylab to'g'ri va to'lqinsimon chiziqlarni chizish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "bilish",
+                code: "4",
+                name: "Bilish jarayonining rivojlanishi",
+                icon: "fa-brain",
+                color: "purple",
+                subdomains: [
+                    {
+                        name: "Matematik tasavvurlar va mantiq",
+                        criteria: [
+                            { code: "4.1.1", text: "5 gacha bo'lgan sonlar miqdorini sanash va ko'rsatish", initial: "B", mid: "T", final: "D" },
+                            { code: "4.1.2", text: "Uchburchak, to'rtburchak, doira shakllarini ajratish", initial: "T", mid: "D", final: "D" },
+                            { code: "4.1.3", text: "Kun qismlarini (ertalab, tush, kechqurun, tun) to'g'ri nomlash", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "ijodiy",
+                code: "5",
+                name: "Ijodiy rivojlanish",
+                icon: "fa-palette",
+                color: "pink",
+                subdomains: [
+                    {
+                        name: "Tasviriy va musiqiy faoliyat",
+                        criteria: [
+                            { code: "5.1.1", text: "Qog'oz varag'iga gul, daraxt, uy kabi sodda rasmlarni chizish", initial: "B", mid: "T", final: "D" },
+                            { code: "5.1.2", text: "Qaychi yordamida qog'ozdan geometrik shakllarni qirqib yopishtirish (applikatsiya)", initial: "B", mid: "T", final: "D" },
+                            { code: "5.1.3", text: "Musiqa xarakteriga (sho'x, sokin) qarab harakatlanish", initial: "T", mid: "D", final: "D" }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+
+    katta: {
+        title: "Katta guruh (5-6 yosh)",
+        badge: "5-6 yosh",
+        desc: "Katta guruh tarbiyalanuvchilarida irodaviy sifatlar, mustaqil mantiqiy fikrlash va nozik motorikani rivojlantirish",
+        groups: ["1-katta", "2-katta", "3-katta"],
+        domains: [
+            {
+                id: "jismoniy",
+                code: "1",
+                name: "Jismoniy rivojlanish va sog'lom turmush tarzi",
+                icon: "fa-person-running",
+                color: "emerald",
+                subdomains: [
+                    {
+                        name: "Yirik motorika",
+                        criteria: [
+                            { code: "1.1.1", text: "Tovondan oyoq uchiga o'tib, to'siqlardan muvozanat saqlab yurish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.1.2", text: "Mokisimon yugurish va turli tezliklarda harakat yo'nalishini o'zgartirish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.1.3", text: "Sport jihozlari bo'ylab yuqoriga va pastga 1 metrgacha tirmashib chiqish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.1.4", text: "Ikki oyog'ini juftlab joyidan uzunlikka sakrash va erkin qo'nish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.1.5", text: "Qo'shimcha g'ildirakli ikki g'ildirakli velosipedda to'siqlarni aylanib o'tish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Mayda motorika",
+                        criteria: [
+                            { code: "1.2.1", text: "Kattalar ko'rsatmasi bo'yicha qog'ozni buklab oddiy shakllar yasash (origami)", initial: "B", mid: "T", final: "D" },
+                            { code: "1.2.2", text: "Kichik o'lchamdagi tugmalarni qadash, poyabzal kiyish va ipini bog'lash", initial: "B", mid: "T", final: "D" },
+                            { code: "1.2.3", text: "To'lqinli va spiralsimon chiziqlar bo'ylab qog'ozni qaychida aniq qirqish", initial: "B", mid: "T", final: "D" },
+                            { code: "1.2.4", text: "To'pni yuqoridan va pastdan uloqtirish, oyoq bilan nishonga tepish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.2.5", text: "Mayda pazllarni (15 tadan ortiq qism) mustaqil yig'ish va modellashtirish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Sog'lom turmush tarzi va xavfsizlik",
+                        criteria: [
+                            { code: "1.3.1", text: "Aksirganda va yo'talganda og'izni tirsak yoki ro'molcha bilan to'sish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.3.2", text: "Ko'cha harakati va yo'ldan o'tishning asosiy xavfsizlik qoidalarini bilish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "ijtimoiy",
+                code: "2",
+                name: "Ijtimoiy-hissiy rivojlanish",
+                icon: "fa-people-roof",
+                color: "amber",
+                subdomains: [
+                    {
+                        name: "O'zini boshqarish va jamoaviy faoliyat",
+                        criteria: [
+                            { code: "2.1.1", text: "Guruh qoidalariga ongli rioya qilish va tengdoshlarini hurmat qilish", initial: "T", mid: "D", final: "D" },
+                            { code: "2.1.2", text: "Qiyin vaziyatlarda o'z his-tuyg'ularini boshqara olish, murosaga kelish", initial: "B", mid: "T", final: "D" },
+                            { code: "2.1.3", text: "O'z xatti-harakati uchun javobgarlikni his qilish va xatolarini tuzatish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "nutq",
+                code: "3",
+                name: "Nutq, muloqot, o'qish va yozish ko'nikmalari",
+                icon: "fa-comments",
+                color: "blue",
+                subdomains: [
+                    {
+                        name: "Bog'langan nutq va fonematik idrok",
+                        criteria: [
+                            { code: "3.1.1", text: "Voqea yoki rasm asosida ketma-ket mantiqiy hikoya tuza olish", initial: "B", mid: "T", final: "D" },
+                            { code: "3.1.2", text: "So'zdagi birinchi va oxirgi tovushni aniqlash va ajratish", initial: "B", mid: "T", final: "D" },
+                            { code: "3.1.3", text: "So'zlarni to'g'ri bo'g'inlarga ajratish va qarsak bilan sanash", initial: "T", mid: "D", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Savodga tayyorgarlik va yozuv",
+                        criteria: [
+                            { code: "3.2.1", text: "Daftar katagiga mos holda naqshlar va elementlarni chiza olish", initial: "B", mid: "T", final: "D" },
+                            { code: "3.2.2", text: "O'z ismining bosh harfini yozma ravishda tasvirlash", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "bilish",
+                code: "4",
+                name: "Bilish jarayonining rivojlanishi",
+                icon: "fa-brain",
+                color: "purple",
+                subdomains: [
+                    {
+                        name: "Matematik tafakkur va tabiat",
+                        criteria: [
+                            { code: "4.1.1", text: "10 gacha to'g'ri va teskari sanash, sonlar ketma-ketligini bilish", initial: "T", mid: "D", final: "D" },
+                            { code: "4.1.2", text: "Narsalarni uzunligi, kengligi va balandligi bo'yicha taqqoslash", initial: "T", mid: "D", final: "D" },
+                            { code: "4.1.3", text: "Hafta kunlari va fasllar ketma-ketligini to'liq bilish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "ijodiy",
+                code: "5",
+                name: "Ijodiy rivojlanish",
+                icon: "fa-palette",
+                color: "pink",
+                subdomains: [
+                    {
+                        name: "Ijodiy fantaziya va sahnalashtirish",
+                        criteria: [
+                            { code: "5.1.1", text: "Berilgan mavzuda mustaqil syujetli kompozitsiya chizish", initial: "B", mid: "T", final: "D" },
+                            { code: "5.1.2", text: "Ertak qahramonlari obraziga kirib, rol ijro etish va intonatsiyani o'zgartirish", initial: "T", mid: "D", final: "D" }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+
+    tayyorlov: {
+        title: "Tayyorlov guruhi (6-7 yosh)",
+        badge: "6-7 yosh",
+        desc: "Maktabga qadam qo'yish ostonasidagi bolalarning ta'limiy, ijtimoiy va intellektual salohiyatini mukammallashtirish",
+        groups: ["1-tayyorlov", "2-tayyorlov", "3-tayyorlov"],
+        domains: [
+            {
+                id: "jismoniy",
+                code: "1",
+                name: "Jismoniy rivojlanish va sog'lom turmush tarzi",
+                icon: "fa-person-running",
+                color: "emerald",
+                subdomains: [
+                    {
+                        name: "Yirik va nozik motorika",
+                        criteria: [
+                            { code: "1.1.1", text: "Belgilangan yo'nalish bo'ylab tez yugurish, to'xtash va yo'nalishni tezkor o'zgartirish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.1.2", text: "Sport asboblari bo'ylab navbat qo'yib erkin ko'tarilish va tushish", initial: "T", mid: "D", final: "D" },
+                            { code: "1.1.3", text: "Qog'ozdan murakkab origami konstruksiyalarini mustaqil yasash", initial: "B", mid: "T", final: "D" },
+                            { code: "1.1.4", text: "Poyabzal bog'ichlarini mustaqil va sifatli bog'lash", initial: "T", mid: "D", final: "D" },
+                            { code: "1.1.5", text: "To'pni yerga urib yurish va aniq nishonga uloqtirishda harakatni muvofiqlashtirish", initial: "T", mid: "D", final: "D" }
+                        ]
+                    },
+                    {
+                        name: "Xavfsizlik va gigiyena",
+                        criteria: [
+                            { code: "1.2.1", text: "Kundalik shaxsiy gigiyenaga to'liq kattalar nazoratisiz amal qilish", initial: "D", mid: "D", final: "D" },
+                            { code: "1.2.2", text: "Favqulodda vaziyatlarda (101, 102, 103 xizmatlari) qanday harakat qilishni bilish", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "ijtimoiy",
+                code: "2",
+                name: "Ijtimoiy-hissiy rivojlanish",
+                icon: "fa-people-roof",
+                color: "amber",
+                subdomains: [
+                    {
+                        name: "Ijtimoiy moslashuv va yetakchilik",
+                        criteria: [
+                            { code: "2.1.1", text: "O'z xohish-irodasini boshqara olish, maktab intizomiga tayyorlik", initial: "B", mid: "T", final: "D" },
+                            { code: "2.1.2", text: "Tengdoshlari bilan nizolarni muloqot orqali tinch hal qilish", initial: "B", mid: "T", final: "D" },
+                            { code: "2.1.3", text: "Kattalarga hurmat, kichiklarga izzat ko'rsatish fazilatlari", initial: "T", mid: "D", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "nutq",
+                code: "3",
+                name: "Nutq, muloqot, o'qish va yozish ko'nikmalari",
+                icon: "fa-comments",
+                color: "blue",
+                subdomains: [
+                    {
+                        name: "O'qish va yozuvga to'liq tayyorgarlik",
+                        criteria: [
+                            { code: "3.1.1", text: "Ona tilida ravon, grammatik to'g'ri va ifodali so'zlay olish", initial: "T", mid: "D", final: "D" },
+                            { code: "3.1.2", text: "Bo'g'inlab sodda so'zlarni o'qish va kitob mutolaasiga qiziqish", initial: "B", mid: "T", final: "D" },
+                            { code: "3.1.3", text: "Yozuv daftarida qalam bilan harf elementlarini to'g'ri yoza olish", initial: "B", mid: "T", final: "D" },
+                            { code: "3.1.4", text: "Xorijiy til (ingliz tili) bo'yicha boshlang'ich so'z va iboralarni qo'llash", initial: "B", mid: "T", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "bilish",
+                code: "4",
+                name: "Bilish jarayonining rivojlanishi",
+                icon: "fa-brain",
+                color: "purple",
+                subdomains: [
+                    {
+                        name: "Matematik amallar va fazoviy oriyentatsiya",
+                        criteria: [
+                            { code: "4.1.1", text: "20 ichida sanash, 10 ichida qo'shish va ayirish amallarini bajarish", initial: "B", mid: "T", final: "D" },
+                            { code: "4.1.2", text: "Soat bo'yicha vaqtni (soat aniqligida) belgilash", initial: "B", mid: "T", final: "D" },
+                            { code: "4.1.3", text: "Fazo va tekislikda (o'ng, chap, yuqori, past, oldinda, orqada) mukammal oriyentatsiya", initial: "T", mid: "D", final: "D" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "ijodiy",
+                code: "5",
+                name: "Ijodiy rivojlanish",
+                icon: "fa-palette",
+                color: "pink",
+                subdomains: [
+                    {
+                        name: "Badiiy mahorat va estetik did",
+                        criteria: [
+                            { code: "5.1.1", text: "Har xil texnikada (akvarel, guash, flomaster) ijodiy kompozitsiyalar yaratish", initial: "T", mid: "D", final: "D" },
+                            { code: "5.1.2", text: "Milliy madaniyat, san'at va xalq an'analariga ehtirom bilan qarash", initial: "T", mid: "D", final: "D" }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+
+    maktabga: {
+        title: "Maktabga tayyorlik xaritasi (6-7 yosh)",
+        badge: "Diagnostika",
+        desc: "O'zbekiston Respublikasi DMTT bitiruvchilarining 1-sinfga qabul qilish oldi 7 ta asosiy tayyorgarlik kompetensiyalari diagnostikasi",
+        groups: ["1-tayyorlov", "2-tayyorlov", "3-tayyorlov"],
+        isSchoolReadiness: true,
+        competencies: [
+            {
+                id: "comp_1",
+                num: "1",
+                title: "Jismoniy rivojlanish va sog'lom turmush tarzi",
+                icon: "fa-child-reaching",
+                color: "emerald",
+                criteria: [
+                    { code: "M.1.1", text: "O'z yoshi uchun belgilangan jismoniy mashqlarni to'liq va muvozanatli bajaradi", level: "D", score: 4 },
+                    { code: "M.1.2", text: "Mayda motorika ko'nikmalariga ega (qalam, qaychi, konstruktorlar bilan ishlash)", level: "D", score: 4 },
+                    { code: "M.1.3", text: "Shaxsiy gigiyena va sog'lom ovqatlanish qoidalarini amalda mustaqil qo'llaydi", level: "D", score: 4 }
+                ]
+            },
+            {
+                id: "comp_2",
+                num: "2",
+                title: "Ijtimoiy-hissiy rivojlanish va 'Men' konsepsiyasi",
+                icon: "fa-heart",
+                color: "rose",
+                criteria: [
+                    { code: "M.2.1", text: "O'zining oilaviy va ijtimoiy rollarini to'liq anglaydi, o'zligini ifodalay oladi", level: "T", score: 3 },
+                    { code: "M.2.2", text: "Qiyin va ziddiyatli vaziyatlardan konstruktiv chiqish yo'llarini qo'llaydi", level: "T", score: 3 },
+                    { code: "M.2.3", text: "Tengdoshlari va kattalar bilan erkin hamkorlik va do'stona muloqot o'rnatadi", level: "D", score: 4 }
+                ]
+            },
+            {
+                id: "comp_3",
+                num: "3",
+                title: "Nutq, muloqot, o'qish va yozish ko'nikmalari",
+                icon: "fa-book-open-reader",
+                color: "blue",
+                criteria: [
+                    { code: "M.3.1", text: "Ona tilida to'g'ri talaffuz, mos grammatik shakllar va boy so'z boyligiga ega", level: "D", score: 4 },
+                    { code: "M.3.2", text: "Kitob mutolaasiga qiziqish bildiradi va sodda jumlalarni bo'g'inlab o'qiydi", level: "T", score: 3 },
+                    { code: "M.3.3", text: "Yozuv daftarida harf elementlarini aniq katak va qatorlarga chiza oladi", level: "T", score: 3 },
+                    { code: "M.3.4", text: "Xorijiy tilni o'rganishga barqaror qiziqish namoyon etadi", level: "T", score: 3 }
+                ]
+            },
+            {
+                id: "comp_4",
+                num: "4",
+                title: "Bilish jarayonining rivojlanishi (Intellektual tayyorgarlik)",
+                icon: "fa-lightbulb",
+                color: "amber",
+                criteria: [
+                    { code: "M.4.1", text: "Voqealar va hodisalar o'rtasidagi sabab-oqibat bog'liqliklarini tushunadi", level: "T", score: 3 },
+                    { code: "M.4.2", text: "Elementar matematik tasavvurlar va 10 doirasida qo'shish-ayirish amallarini biladi", level: "D", score: 4 },
+                    { code: "M.4.3", text: "Fazoviy va vaqtinchalik tushunchalarni (kecha, bugun, ertaga, soat) to'g'ri qo'llaydi", level: "D", score: 4 }
+                ]
+            },
+            {
+                id: "comp_5",
+                num: "5",
+                title: "Ijodiy rivojlanish va madaniy-estetik idrok",
+                icon: "fa-masks-theater",
+                color: "purple",
+                criteria: [
+                    { code: "M.5.1", text: "San'at va madaniyatga qiziqadi, milliy an'analarni qadrlaydi", level: "D", score: 4 },
+                    { code: "M.5.2", text: "Olingan bilimlarni amaliy ijodiy ishlarda (rasm, loyiha, sahnalashtirish) qo'llay oladi", level: "D", score: 4 }
+                ]
+            },
+            {
+                id: "comp_6",
+                num: "6",
+                title: "O'quv faoliyatiga irodaviy va motivatsion tayyorgarlik",
+                icon: "fa-graduation-cap",
+                color: "indigo",
+                criteria: [
+                    { code: "M.6.1", text: "30-35 daqiqalik dars va mashg'ulot davomida diqqatini barqaror saqlay oladi", level: "T", score: 3 },
+                    { code: "M.6.2", text: "Boshlangan topshiriqni oxirigacha yetkazishga irodaviy intilish ko'rsatadi", level: "T", score: 3 },
+                    { code: "M.6.3", text: "O'quv qurollaridan ehtiyotkorlik bilan foydalanadi va joy-joyiga qo'yadi", level: "D", score: 4 }
+                ]
+            },
+            {
+                id: "comp_7",
+                num: "7",
+                title: "Psixologik-ijtimoiy moslashuv va 'O'quvchi' maqomi",
+                icon: "fa-user-check",
+                color: "teal",
+                criteria: [
+                    { code: "M.7.1", text: "Maktabga borish va yangi bilimlarni egallashga kuchli ichki qiziqishi bor", level: "D", score: 4 },
+                    { code: "M.7.2", text: "Yangi jamoa va o'qituvchi bilan samimiy munosabat o'rnatishga psixologik tayyor", level: "D", score: 4 }
+                ]
+            }
+        ]
+    }
+};
+
+
+// ============================================================================
+// 57-DMTT: BOLALAR RIVOJLANISH XARITASI VA DIAGNOSTIKASI BOSHQARUV TIZIMI
+// "Ilk qadam" davlat o'quv dasturi va 5 ta PDF xaritasi asosida
+// ============================================================================
+
+let currentDevAgeTab = 'kichik';
+let currentDevPeriod = 'yanvar';
+let currentDevDomainFilter = 'all';
+let currentDevGroupFilter = 'all';
+let currentDevViewMode = 'students';
+let currentEditingStudentId = 101;
+let currentStudentDraftScores = {};
+
+// 1. Dastlabki Bolalar Ro'yxati (Barcha 11 ta guruh uchun)
+const DEFAULT_DEV_STUDENTS = [
+    // Kichik guruhlar (3-4 yosh)
+    { id: 101, name: "Alijonov Bobur", group: "1-kichik", ageGroup: "kichik", jismoniy: 88, ijtimoiy: 85, nutq: 82, bilish: 86, ijodiy: 90, avatar: "https://images.unsplash.com/photo-1543332164-6e82f355badc?w=100&auto=format&fit=crop&q=80", note: "Faol va qiziquvchan, jismoniy mashg'ulotlarda yetakchi" },
+    { id: 102, name: "Madaminova Fotima", group: "1-kichik", ageGroup: "kichik", jismoniy: 92, ijtimoiy: 90, nutq: 94, bilish: 90, ijodiy: 96, avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80", note: "Nutqi nihoyatda ravon, she'r va qo'shiqlarni tez o'rganadi" },
+    { id: 103, name: "Madaminova Zuhra", group: "1-kichik", ageGroup: "kichik", jismoniy: 86, ijtimoiy: 84, nutq: 88, bilish: 85, ijodiy: 90, avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80", note: "Ijodiy topshiriqlarni juda chiroyli bajaradi" },
+    { id: 104, name: "Saidov Jasur", group: "1-kichik", ageGroup: "kichik", jismoniy: 75, ijtimoiy: 70, nutq: 68, bilish: 72, ijodiy: 74, avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80", note: "Nutqini rivojlantirish bo'yicha logoped bilan individual ishlanmoqda" },
+    { id: 105, name: "Ergashev Diyor", group: "2-kichik", ageGroup: "kichik", jismoniy: 90, ijtimoiy: 92, nutq: 88, bilish: 90, ijodiy: 92, avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=100&auto=format&fit=crop&q=80", note: "Tengdoshlari bilan do'stona munosabatda, tarbiyachiga ko'makchi" },
+    { id: 106, name: "Xolmatova Oysha", group: "2-kichik", ageGroup: "kichik", jismoniy: 85, ijtimoiy: 86, nutq: 90, bilish: 88, ijodiy: 92, avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=100&auto=format&fit=crop&q=80", note: "Musiqa va ritm mashg'ulotlarida faol ishtirok etadi" },
+    { id: 107, name: "Zokirov Sarvar", group: "3-kichik", ageGroup: "kichik", jismoniy: 82, ijtimoiy: 80, nutq: 78, bilish: 84, ijodiy: 80, avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80", note: "Mantiqiy o'yinlar va kubiklar bilan ishlashga usta" },
+    { id: 108, name: "Ismoilova Rayhona", group: "3-kichik", ageGroup: "kichik", jismoniy: 91, ijtimoiy: 89, nutq: 92, bilish: 90, ijodiy: 94, avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&auto=format&fit=crop&q=80", note: "Mustaqil ovqatlanish va kiyinish ko'nikmalari to'liq shakllangan" },
+
+    // O'rta guruhlar (4-5 yosh)
+    { id: 201, name: "Rustamova Diyora", group: "1-o'rta", ageGroup: "orta", jismoniy: 94, ijtimoiy: 91, nutq: 95, bilish: 93, ijodiy: 96, avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80", note: "Hisob-kitob va atrof-olam darslarida a'lo natija" },
+    { id: 202, name: "Ismoilov Bilol", group: "1-o'rta", ageGroup: "orta", jismoniy: 68, ijtimoiy: 64, nutq: 62, bilish: 66, ijodiy: 70, avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80", note: "Logoped va pedagog bilan individual mashg'ulot olib borilmoqda" },
+    { id: 203, name: "Abduazizov Shohruh", group: "1-o'rta", ageGroup: "orta", jismoniy: 90, ijtimoiy: 88, nutq: 92, bilish: 90, ijodiy: 88, avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&auto=format&fit=crop&q=80", note: "Harakatli o'yinlarda faol va chaqqon" },
+    { id: 204, name: "Mirzayev Bekzod", group: "2-o'rta", ageGroup: "orta", jismoniy: 88, ijtimoiy: 86, nutq: 85, bilish: 89, ijodiy: 90, avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=100&auto=format&fit=crop&q=80", note: "Lego va konstruksiya yasashga juda qiziqadi" },
+    { id: 205, name: "Nazarova Fotima", group: "2-o'rta", ageGroup: "orta", jismoniy: 92, ijtimoiy: 94, nutq: 93, bilish: 91, ijodiy: 95, avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80", note: "Kattalar bilan xushmuomala, guruh yetakchilaridan biri" },
+
+    // Katta guruhlar (5-6 yosh)
+    { id: 301, name: "Yusupov Shaxzod", group: "1-katta", ageGroup: "katta", jismoniy: 95, ijtimoiy: 93, nutq: 92, bilish: 96, ijodiy: 94, avatar: "https://images.unsplash.com/photo-1543332164-6e82f355badc?w=100&auto=format&fit=crop&q=80", note: "Matematik tasavvurlari juda yuqori, mustaqil fikrlaydi" },
+    { id: 302, name: "Mirzayeva Rayhona", group: "1-katta", ageGroup: "katta", jismoniy: 88, ijtimoiy: 90, nutq: 89, bilish: 87, ijodiy: 93, avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&auto=format&fit=crop&q=80", note: "Rasm chizish va applikatsiya bo'yicha namunali" },
+    { id: 303, name: "Karimova Dildora", group: "1-katta", ageGroup: "katta", jismoniy: 92, ijtimoiy: 94, nutq: 96, bilish: 92, ijodiy: 95, avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80", note: "Ravon nutq sohibasi, rolli sahna ko'rinishlarida bosh rollarda" },
+    { id: 304, name: "Rahmatillayev Doniyor", group: "2-katta", ageGroup: "katta", jismoniy: 90, ijtimoiy: 88, nutq: 86, bilish: 92, ijodiy: 88, avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&auto=format&fit=crop&q=80", note: "Sport to'siqlaridan oshib o'tishda chaqqon" },
+    { id: 305, name: "Ahmedova Nilufar", group: "2-katta", ageGroup: "katta", jismoniy: 89, ijtimoiy: 91, nutq: 90, bilish: 88, ijodiy: 94, avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&auto=format&fit=crop&q=80", note: "Origami va mayda motorika topshiriqlarini qoyilmaqom bajaradi" },
+    { id: 306, name: "Murodov Samandar", group: "3-katta", ageGroup: "katta", jismoniy: 93, ijtimoiy: 89, nutq: 91, bilish: 94, ijodiy: 90, avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80", note: "Hafta kunlari va 10 gacha hisoblashni to'liq o'zlashtirgan" },
+
+    // Tayyorlov guruhlari (6-7 yosh) va Maktabga Tayyorlik
+    { id: 401, name: "Mansurov Otabek", group: "1-tayyorlov", ageGroup: "tayyorlov", jismoniy: 96, ijtimoiy: 95, nutq: 98, bilish: 98, ijodiy: 97, avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80", note: "Maktabga to'liq tayyor, o'qish va yozuv elementlarini mukammal egallagan" },
+    { id: 402, name: "Nazarova Madina", group: "1-tayyorlov", ageGroup: "tayyorlov", jismoniy: 90, ijtimoiy: 89, nutq: 92, bilish: 91, ijodiy: 95, avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80", note: "Madaniy-axloqiy fazilatlari va jamoaviy intizomi a'lo darajada" },
+    { id: 403, name: "Hamidov Sanjar", group: "2-tayyorlov", ageGroup: "tayyorlov", jismoniy: 94, ijtimoiy: 92, nutq: 90, bilish: 95, ijodiy: 92, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80", note: "20 gacha matematik amallarni erkin bajaradi" },
+    { id: 404, name: "Qosimova Diyora", group: "2-tayyorlov", ageGroup: "tayyorlov", jismoniy: 92, ijtimoiy: 94, nutq: 96, bilish: 93, ijodiy: 96, avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=100&auto=format&fit=crop&q=80", note: "Ingliz tili boshlang'ich so'zlarini yaxshi biladi, ifodali o'qiydi" },
+    { id: 405, name: "Toshpo'latov Sardor", group: "3-tayyorlov", ageGroup: "tayyorlov", jismoniy: 88, ijtimoiy: 86, nutq: 84, bilish: 89, ijodiy: 90, avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&auto=format&fit=crop&q=80", note: "Maktab kun tartibi va intizomiga ruhiy tayyorligi shakllangan" }
+];
+
+// LocalStorage orqali o'zgarishlarni yuklash
+function getDevStudents() {
+    try {
+        const stored = localStorage.getItem('DMTT_DEV_STUDENTS_CUSTOM');
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+    } catch (e) {
+        console.error("LocalStorage error in getDevStudents:", e);
+    }
+    return DEFAULT_DEV_STUDENTS;
+}
+
+function saveDevStudents(studentsList) {
+    try {
+        localStorage.setItem('DMTT_DEV_STUDENTS_CUSTOM', JSON.stringify(studentsList));
+    } catch (e) {
+        console.error("LocalStorage save error:", e);
+    }
+}
+
+// 2. Tablarni almashtirish (Kichik, O'rta, Katta, Tayyorlov, Maktabga)
+function switchDevAgeTab(ageKey) {
+    if (!DEV_AGE_GROUPS[ageKey]) return;
+    currentDevAgeTab = ageKey;
+    currentDevDomainFilter = 'all';
+    currentDevGroupFilter = 'all';
+
+    // UI tugmalarini faollashtirish
+    document.querySelectorAll('.dev-age-tab-btn').forEach(btn => {
+        btn.classList.remove('active-dev-tab', 'bg-emerald-500', 'text-white', 'border-emerald-300', 'bg-indigo-600');
+        btn.classList.add('bg-slate-50', 'text-slate-700', 'border-slate-200');
+    });
+
+    const activeBtn = document.getElementById(`dev-age-tab-${ageKey}`);
+    if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-50', 'text-slate-700', 'border-slate-200');
+        if (ageKey === 'maktabga') {
+            activeBtn.classList.add('active-dev-tab', 'bg-indigo-600', 'text-white', 'border-indigo-400');
+        } else {
+            activeBtn.classList.add('active-dev-tab', 'bg-emerald-500', 'text-white', 'border-emerald-300');
+        }
+    }
+
+    const badgeEl = document.getElementById('dev-current-age-badge');
+    if (badgeEl) {
+        badgeEl.innerText = DEV_AGE_GROUPS[ageKey].title;
+    }
+
+    renderDevelopmentSection();
+    showToast(`📍 ${DEV_AGE_GROUPS[ageKey].title} rivojlanish xaritasiga o'tildi`);
+}
+
+// 3. Monitoring Davrini almashtirish (Sentabr, Yanvar, May)
+function switchDevPeriod(period) {
+    currentDevPeriod = period;
+
+    ['sentyabr', 'yanvar', 'may'].forEach(p => {
+        const btn = document.getElementById(`dev-period-${p}-btn`);
+        if (btn) {
+            if (p === period) {
+                btn.className = "p-2.5 rounded-xl border border-blue-500 bg-blue-600 text-white font-bold transition text-center shadow-xs cursor-pointer";
+                btn.querySelector('span')?.classList.remove('text-slate-500');
+                btn.querySelector('span')?.classList.add('opacity-90');
+            } else {
+                btn.className = "p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-blue-50 transition text-center cursor-pointer";
+                btn.querySelector('span')?.classList.remove('opacity-90');
+                btn.querySelector('span')?.classList.add('text-slate-500');
+            }
+        }
+    });
+
+    renderDevStudentsTable();
+    showToast(`📅 Monitoring davri: ${period.toUpperCase()} qilib belgilandi`);
+}
+
+// 4. Soha bo'yicha filtr
+function filterDevDomain(domainId) {
+    currentDevDomainFilter = domainId;
+    renderDevDomainCards();
+    renderDevStudentsTable();
+    if (currentDevViewMode === 'registry') {
+        renderDevCriteriaRegistry();
+    }
+}
+
+// 5. Rejimni almashtirish (Monitoring vs Reyestr)
+function switchDevViewMode(mode) {
+    currentDevViewMode = mode;
+    const studentsContainer = document.getElementById('dev-view-students-container');
+    const registryContainer = document.getElementById('dev-view-registry-container');
+    const btnStudents = document.getElementById('dev-viewmode-students-btn');
+    const btnRegistry = document.getElementById('dev-viewmode-registry-btn');
+
+    if (mode === 'students') {
+        studentsContainer?.classList.remove('hidden');
+        registryContainer?.classList.add('hidden');
+        if (btnStudents) {
+            btnStudents.className = "px-3.5 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer hover-glass-scale";
+        }
+        if (btnRegistry) {
+            btnRegistry.className = "px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer hover-glass-scale";
+        }
+        renderDevStudentsTable();
+    } else {
+        studentsContainer?.classList.add('hidden');
+        registryContainer?.classList.remove('hidden');
+        if (btnStudents) {
+            btnStudents.className = "px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer hover-glass-scale";
+        }
+        if (btnRegistry) {
+            btnRegistry.className = "px-3.5 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer hover-glass-scale";
+        }
+        renderDevCriteriaRegistry();
+    }
+}
+
+// 6. Guruh Filtrini almashtirish
+function filterDevAgeGroup(groupName) {
+    currentDevGroupFilter = groupName;
+    renderDevGroupFilters();
+    renderDevStudentsTable();
+}
+
+// 7. Butun bo'limni render qilish
+function renderDevelopmentSection() {
+    renderDevDomainCards();
+    renderDevGroupFilters();
+    if (currentDevViewMode === 'students') {
+        renderDevStudentsTable();
+    } else {
+        renderDevCriteriaRegistry();
+    }
+    updateDevSummaryStats();
+}
+
+// Soha kartalarini render qilish
+function renderDevDomainCards() {
+    const grid = document.getElementById('dev-domains-cards-grid');
+    const titleEl = document.getElementById('dev-domains-title');
+    if (!grid) return;
+
+    const groupDef = DEV_AGE_GROUPS[currentDevAgeTab];
+    if (!groupDef) return;
+
+    if (groupDef.isSchoolReadiness) {
+        if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-graduation-cap text-indigo-500"></i> Maktabga Tayyorlikning 7 Ta Asosiy Kompetensiyasi:`;
+        grid.className = "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5";
+        grid.innerHTML = groupDef.competencies.map(c => {
+            const isSelected = currentDevDomainFilter === c.id;
+            return `
+                <div onclick="filterDevDomain('${isSelected ? 'all' : c.id}')" class="p-3 rounded-2xl ${isSelected ? 'bg-indigo-600 text-white border-indigo-700 shadow-md ring-2 ring-indigo-300' : 'bg-indigo-50/70 border-indigo-200 text-slate-800 hover:bg-indigo-100/70'} border cursor-pointer transition hover-glass-scale space-y-1.5 text-center">
+                    <span class="w-7 h-7 rounded-xl ${isSelected ? 'bg-white text-indigo-700' : 'bg-indigo-600 text-white'} font-black text-xs inline-flex items-center justify-center">${c.num}</span>
+                    <p class="font-extrabold text-[10px] line-clamp-2">${c.title}</p>
+                    <span class="text-[9px] ${isSelected ? 'text-indigo-200' : 'text-indigo-600'} font-bold">100% tayyor</span>
+                </div>
+            `;
+        }).join('');
+    } else {
+        if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-shapes text-emerald-500"></i> "Ilk Qadam" Davlat Dasturining 5 Ta Asosiy Sohasi (${groupDef.badge}):`;
+        grid.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3";
+        grid.innerHTML = groupDef.domains.map(d => {
+            const isSelected = currentDevDomainFilter === d.id;
+            const colors = {
+                emerald: { active: "bg-emerald-600 text-white border-emerald-700", normal: "bg-emerald-50/80 border-emerald-200 text-slate-800 hover:bg-emerald-100/70", badge: "bg-emerald-500 text-white" },
+                amber: { active: "bg-amber-600 text-white border-amber-700", normal: "bg-amber-50/80 border-amber-200 text-slate-800 hover:bg-amber-100/70", badge: "bg-amber-500 text-white" },
+                blue: { active: "bg-blue-600 text-white border-blue-700", normal: "bg-blue-50/80 border-blue-200 text-slate-800 hover:bg-blue-100/70", badge: "bg-blue-500 text-white" },
+                purple: { active: "bg-purple-600 text-white border-purple-700", normal: "bg-purple-50/80 border-purple-200 text-slate-800 hover:bg-purple-100/70", badge: "bg-purple-500 text-white" },
+                pink: { active: "bg-pink-600 text-white border-pink-700", normal: "bg-pink-50/80 border-pink-200 text-slate-800 hover:bg-pink-100/70", badge: "bg-pink-500 text-white" }
+            }[d.color] || { active: "bg-blue-600 text-white", normal: "bg-slate-50 border-slate-200", badge: "bg-blue-500 text-white" };
+
+            return `
+                <div onclick="filterDevDomain('${isSelected ? 'all' : d.id}')" class="p-3.5 rounded-2xl ${isSelected ? colors.active + ' shadow-md ring-2 ring-emerald-300' : colors.normal} border cursor-pointer transition hover-glass-scale space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="w-6 h-6 rounded-lg ${isSelected ? 'bg-white text-slate-900' : colors.badge} font-black text-xs inline-flex items-center justify-center">${d.code}</span>
+                        <i class="fa-solid ${d.icon} text-sm ${isSelected ? 'text-white' : 'text-slate-400'}"></i>
+                    </div>
+                    <h5 class="font-extrabold text-xs line-clamp-1">${d.name}</h5>
+                    <p class="text-[10px] ${isSelected ? 'text-slate-200' : 'text-slate-500'} line-clamp-1">${d.subdomains.map(s => s.name).join(', ')}</p>
+                </div>
+            `;
+        }).join('');
+    }
+}
+
+// Guruh filtrlari tugmachalarini render qilish
+function renderDevGroupFilters() {
+    const container = document.getElementById('dev-group-filters-pills');
+    if (!container) return;
+
+    const groupDef = DEV_AGE_GROUPS[currentDevAgeTab];
+    if (!groupDef) return;
+
+    let html = `
+        <button onclick="filterDevAgeGroup('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition hover-glass-scale cursor-pointer ${currentDevGroupFilter === 'all' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
+            Barcha guruhlar
+        </button>
+    `;
+
+    groupDef.groups.forEach(g => {
+        const isSel = currentDevGroupFilter === g;
+        html += `
+            <button onclick="filterDevAgeGroup('${g}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition hover-glass-scale cursor-pointer ${isSel ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
+                ${g}
+            </button>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+// Bolalar monitoring jadvalini render qilish
+function renderDevStudentsTable() {
+    const tbody = document.getElementById('dev-students-table-body');
+    if (!tbody) return;
+
+    const allStudents = getDevStudents();
+    const groupDef = DEV_AGE_GROUPS[currentDevAgeTab];
+    if (!groupDef) return;
+
+    let filtered = allStudents.filter(s => {
+        if (currentDevAgeTab === 'maktabga') {
+            return s.ageGroup === 'tayyorlov';
+        }
+        return s.ageGroup === currentDevAgeTab;
+    });
+
+    if (currentDevGroupFilter !== 'all') {
+        filtered = filtered.filter(s => s.group === currentDevGroupFilter);
+    }
+
+    const searchInput = document.getElementById('dev-student-search-input');
+    if (searchInput && searchInput.value.trim().length > 0) {
+        const q = searchInput.value.toLowerCase().trim();
+        filtered = filtered.filter(s => s.name.toLowerCase().includes(q));
+    }
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="11" class="p-8 text-center text-slate-400 font-bold">
+                    <i class="fa-solid fa-folder-open text-3xl mb-2 block text-slate-300"></i>
+                    Tanlangan mezonlar bo'yicha tarbiyalanuvchilar topilmadi
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = filtered.map((s, idx) => {
+        // Dinamik o'rtacha hisoblash
+        const avg = Math.round((s.jismoniy + s.ijtimoiy + s.nutq + s.bilish + s.ijodiy) / 5);
+        let badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
+        let levelText = "Yuqori";
+        if (avg < 75 && avg >= 60) {
+            badgeClass = "bg-blue-100 text-blue-800 border-blue-300";
+            levelText = "O'rta";
+        } else if (avg < 60) {
+            badgeClass = "bg-amber-100 text-amber-800 border-amber-300";
+            levelText = "Boshlang'ich";
+        }
+
+        return `
+            <tr class="hover:bg-blue-50/60 transition duration-150 border-b border-slate-100">
+                <td class="p-3.5 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
+                <td class="p-3.5">
+                    <div class="flex items-center gap-3">
+                        <img src="${s.avatar}" class="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-xs" alt="${s.name}">
+                        <div>
+                            <p class="font-extrabold text-slate-900 text-xs">${s.name}</p>
+                            <span class="text-[10px] font-semibold text-slate-500">${s.group} • ${groupDef.badge}</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="p-3.5 text-center font-bold text-slate-700">
+                    <span class="px-2 py-0.5 rounded-lg bg-slate-100 text-[11px] font-semibold">${s.group}</span>
+                </td>
+                <td class="p-3.5 text-center">
+                    <span class="font-black text-xs text-slate-800">${s.jismoniy}%</span>
+                    <div class="w-12 bg-slate-100 rounded-full h-1.5 mx-auto mt-1 overflow-hidden">
+                        <div class="bg-emerald-500 h-full rounded-full" style="width: ${s.jismoniy}%"></div>
+                    </div>
+                </td>
+                <td class="p-3.5 text-center">
+                    <span class="font-black text-xs text-slate-800">${s.ijtimoiy}%</span>
+                    <div class="w-12 bg-slate-100 rounded-full h-1.5 mx-auto mt-1 overflow-hidden">
+                        <div class="bg-amber-500 h-full rounded-full" style="width: ${s.ijtimoiy}%"></div>
+                    </div>
+                </td>
+                <td class="p-3.5 text-center">
+                    <span class="font-black text-xs text-slate-800">${s.nutq}%</span>
+                    <div class="w-12 bg-slate-100 rounded-full h-1.5 mx-auto mt-1 overflow-hidden">
+                        <div class="bg-blue-500 h-full rounded-full" style="width: ${s.nutq}%"></div>
+                    </div>
+                </td>
+                <td class="p-3.5 text-center">
+                    <span class="font-black text-xs text-slate-800">${s.bilish}%</span>
+                    <div class="w-12 bg-slate-100 rounded-full h-1.5 mx-auto mt-1 overflow-hidden">
+                        <div class="bg-purple-500 h-full rounded-full" style="width: ${s.bilish}%"></div>
+                    </div>
+                </td>
+                <td class="p-3.5 text-center">
+                    <span class="font-black text-xs text-slate-800">${s.ijodiy}%</span>
+                    <div class="w-12 bg-slate-100 rounded-full h-1.5 mx-auto mt-1 overflow-hidden">
+                        <div class="bg-pink-500 h-full rounded-full" style="width: ${s.ijodiy}%"></div>
+                    </div>
+                </td>
+                <td class="p-3.5 text-center">
+                    <span class="font-black text-sm text-slate-900">${avg}%</span>
+                </td>
+                <td class="p-3.5 text-center">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black border ${badgeClass}">${levelText}</span>
+                </td>
+                <td class="p-3.5 text-center">
+                    <div class="flex items-center justify-center gap-1.5">
+                        <button onclick="openStudentDevModal(${s.id})" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 font-bold text-xs rounded-xl transition shadow-xs cursor-pointer flex items-center gap-1" title="Xaritani ko'rish va baholash">
+                            <i class="fa-solid fa-id-card"></i> Xarita
+                        </button>
+                        <button onclick="printStudentPersonalMapById(${s.id})" class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition cursor-pointer" title="Chop etish">
+                            <i class="fa-solid fa-print"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Live qidiruv funksiyasi
+function searchDevStudents(val) {
+    renderDevStudentsTable();
+}
+
+// Reyestr ko'rinishini render qilish
+function renderDevCriteriaRegistry() {
+    const container = document.getElementById('dev-registry-content');
+    if (!container) return;
+
+    const groupDef = DEV_AGE_GROUPS[currentDevAgeTab];
+    if (!groupDef) return;
+
+    if (groupDef.isSchoolReadiness) {
+        container.innerHTML = `
+            <div class="p-4 bg-indigo-50/70 rounded-2xl border border-indigo-200 mb-4">
+                <h5 class="font-black text-sm text-indigo-900 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-indigo-600"></i> Maktabga Tayyorlik Diagnostikasi (Bitiruvchi 6-7 yosh bolalar uchun)
+                </h5>
+                <p class="text-xs text-indigo-800 mt-1">
+                    7 ta kompetensiyaviy soha bo'yicha boshlang'ich sinflarga qabul oldi kompleks pedagogik va psixologik baholash tizimi.
+                </p>
+            </div>
+            <div class="space-y-4">
+                ${groupDef.competencies.map(comp => `
+                    <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
+                        <div class="flex items-center gap-3 border-b border-slate-100 pb-2">
+                            <span class="w-7 h-7 rounded-xl bg-indigo-600 text-white font-black text-xs flex items-center justify-center">${comp.num}</span>
+                            <h6 class="font-extrabold text-xs text-slate-900">${comp.title}</h6>
+                        </div>
+                        <div class="space-y-1.5 pl-2">
+                            ${comp.criteria.map(crit => `
+                                <div class="flex items-start justify-between gap-3 text-xs p-2 rounded-xl bg-slate-50/70 border border-slate-100">
+                                    <div class="flex items-start gap-2">
+                                        <span class="font-black text-indigo-600 font-mono text-[11px]">${crit.code}:</span>
+                                        <span class="text-slate-800 font-medium">${crit.text}</span>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 font-black text-[10px] border border-emerald-300">
+                                        ${crit.level} (Doimiy)
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } else {
+        container.innerHTML = groupDef.domains.map(dom => `
+            <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-xl bg-emerald-500 text-white font-black text-xs flex items-center justify-center">${dom.code}</span>
+                        <h5 class="font-black text-sm text-slate-900">${dom.name}</h5>
+                    </div>
+                    <span class="text-xs font-bold text-slate-500">${dom.subdomains.length} ta kichik soha</span>
+                </div>
+
+                <div class="space-y-3">
+                    ${dom.subdomains.map(sub => `
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/70 space-y-2">
+                            <h6 class="font-black text-xs text-slate-800 flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-dot text-emerald-500 text-[9px]"></i> Kichik soha: ${sub.name}
+                            </h6>
+                            <div class="space-y-1.5">
+                                ${sub.criteria.map(crit => `
+                                    <div class="flex flex-wrap items-center justify-between gap-2 p-2 bg-white rounded-lg border border-slate-100 text-xs">
+                                        <div class="flex items-start gap-2 max-w-2xl">
+                                            <span class="font-black text-emerald-700 font-mono text-[11px]">${crit.code}</span>
+                                            <span class="text-slate-800">${crit.text}</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-[10px] font-bold">
+                                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600">Sentabr: ${crit.initial}</span>
+                                            <i class="fa-solid fa-arrow-right text-[8px] text-slate-300"></i>
+                                            <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800">Yanvar: ${crit.mid}</span>
+                                            <i class="fa-solid fa-arrow-right text-[8px] text-slate-300"></i>
+                                            <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">May: ${crit.final}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+// Statistik ko'rsatkichlarni yangilash
+function updateDevSummaryStats() {
+    const allStudents = getDevStudents();
+    let filtered = allStudents.filter(s => {
+        if (currentDevAgeTab === 'maktabga') return s.ageGroup === 'tayyorlov';
+        return s.ageGroup === currentDevAgeTab;
+    });
+
+    if (filtered.length === 0) return;
+
+    let totalAvg = 0;
+    let high = 0, med = 0, low = 0;
+
+    filtered.forEach(s => {
+        const avg = (s.jismoniy + s.ijtimoiy + s.nutq + s.bilish + s.ijodiy) / 5;
+        totalAvg += avg;
+        if (avg >= 75) high++;
+        else if (avg >= 60) med++;
+        else low++;
+    });
+
+    const finalAvg = Math.round(totalAvg / filtered.length);
+    const pHigh = Math.round((high / filtered.length) * 100);
+    const pMed = Math.round((med / filtered.length) * 100);
+    const pLow = Math.round((low / filtered.length) * 100);
+
+    const avgBadge = document.getElementById('dev-avg-percent-badge');
+    const levelBadge = document.getElementById('dev-avg-level-badge');
+    const cHigh = document.getElementById('dev-count-high');
+    const cMed = document.getElementById('dev-count-medium');
+    const cLow = document.getElementById('dev-count-low');
+
+    if (avgBadge) avgBadge.innerText = `${finalAvg}%`;
+    if (levelBadge) {
+        levelBadge.innerText = finalAvg >= 75 ? "Yuqori o'zlashtirish" : (finalAvg >= 60 ? "O'rta o'zlashtirish" : "Boshlang'ich o'zlashtirish");
+    }
+    if (cHigh) cHigh.innerText = `${pHigh}% (${high} bola)`;
+    if (cMed) cMed.innerText = `${pMed}% (${med} bola)`;
+    if (cLow) cLow.innerText = `${pLow}% (${low} bola)`;
+}
+
+// 8. Bolaning shaxsiy rivojlanish modalini ochish
+function openStudentDevModal(studentId) {
+    currentEditingStudentId = studentId;
+    const allStudents = getDevStudents();
+    const s = allStudents.find(item => item.id === studentId);
+    if (!s) return;
+
+    currentStudentDraftScores = { ...s };
+
+    const nameEl = document.getElementById('dev-modal-student-name');
+    const grpEl = document.getElementById('dev-modal-student-group');
+    const avEl = document.getElementById('dev-modal-student-avatar');
+    const avgEl = document.getElementById('dev-modal-avg-score');
+    const noteEl = document.getElementById('dev-modal-note-input');
+    const periodText = document.getElementById('dev-modal-period-text');
+
+    const avg = Math.round((s.jismoniy + s.ijtimoiy + s.nutq + s.bilish + s.ijodiy) / 5);
+
+    if (nameEl) nameEl.innerText = s.name;
+    if (grpEl) grpEl.innerText = `Guruhi: ${s.group}`;
+    if (avEl) avEl.src = s.avatar;
+    if (avgEl) avgEl.innerText = `${avg}%`;
+    if (noteEl) noteEl.value = s.note || "";
+    if (periodText) {
+        periodText.innerText = currentDevPeriod === 'sentyabr' ? "Dastlabki (Sentabr)" : (currentDevPeriod === 'yanvar' ? "Oraliq (Yanvar)" : "Yakuniy (May)");
+    }
+
+    const setBar = (idBar, idVal, val) => {
+        const b = document.getElementById(idBar);
+        const v = document.getElementById(idVal);
+        if (b) b.style.width = `${val}%`;
+        if (v) v.innerText = `${val}%`;
+    };
+    setBar('dev-bar-jismoniy', 'dev-val-jismoniy', s.jismoniy);
+    setBar('dev-bar-ijtimoiy', 'dev-val-ijtimoiy', s.ijtimoiy);
+    setBar('dev-bar-nutq', 'dev-val-nutq', s.nutq);
+    setBar('dev-bar-bilish', 'dev-val-bilish', s.bilish);
+    setBar('dev-bar-ijodiy', 'dev-val-ijodiy', s.ijodiy);
+
+    renderStudentCriteriaCards(s);
+    openModal('modal-student-dev-detail');
+}
+
+// Modal ichidagi mezonlarni interaktiv K, B, T, D bilan render qilish
+function renderStudentCriteriaCards(student) {
+    const list = document.getElementById('dev-modal-criteria-list');
+    if (!list) return;
+
+    const groupDef = DEV_AGE_GROUPS[student.ageGroup] || DEV_AGE_GROUPS['kichik'];
+    let criteriaItems = [];
+
+    if (groupDef.isSchoolReadiness) {
+        groupDef.competencies.forEach(comp => {
+            comp.criteria.forEach(c => criteriaItems.push({ ...c, domainTitle: comp.title }));
+        });
+    } else {
+        groupDef.domains.forEach(d => {
+            d.subdomains.forEach(sub => {
+                sub.criteria.forEach(c => criteriaItems.push({ ...c, domainTitle: `${d.name} (${sub.name})` }));
+            });
+        });
+    }
+
+    list.innerHTML = criteriaItems.slice(0, 15).map(crit => {
+        // Bahoni olish
+        const curScore = crit.mid || "T";
+        return `
+            <div class="p-3 bg-slate-50/90 rounded-xl border border-slate-200/80 flex flex-wrap items-center justify-between gap-2">
+                <div class="max-w-md">
+                    <div class="flex items-center gap-1.5 mb-0.5">
+                        <span class="font-black text-emerald-700 font-mono text-[10px]">${crit.code}</span>
+                        <span class="text-[9px] text-slate-400 font-bold">${crit.domainTitle}</span>
+                    </div>
+                    <p class="text-xs text-slate-800 font-medium">${crit.text}</p>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button type="button" onclick="setCriteriaBadge('${crit.code}', 'K')" id="badge-${crit.code}-K" class="criteria-score-btn w-6 h-6 rounded-lg text-[10px] font-black transition ${curScore === 'K' ? 'bg-rose-600 text-white shadow-xs' : 'bg-slate-200 text-slate-600 hover:bg-rose-100'}">K</button>
+                    <button type="button" onclick="setCriteriaBadge('${crit.code}', 'B')" id="badge-${crit.code}-B" class="criteria-score-btn w-6 h-6 rounded-lg text-[10px] font-black transition ${curScore === 'B' ? 'bg-amber-500 text-white shadow-xs' : 'bg-slate-200 text-slate-600 hover:bg-amber-100'}">B</button>
+                    <button type="button" onclick="setCriteriaBadge('${crit.code}', 'T')" id="badge-${crit.code}-T" class="criteria-score-btn w-6 h-6 rounded-lg text-[10px] font-black transition ${curScore === 'T' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-200 text-slate-600 hover:bg-blue-100'}">T</button>
+                    <button type="button" onclick="setCriteriaBadge('${crit.code}', 'D')" id="badge-${crit.code}-D" class="criteria-score-btn w-6 h-6 rounded-lg text-[10px] font-black transition ${curScore === 'D' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-200 text-slate-600 hover:bg-emerald-100'}">D</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function setCriteriaBadge(code, scoreChar) {
+    ['K', 'B', 'T', 'D'].forEach(c => {
+        const btn = document.getElementById(`badge-${code}-${c}`);
+        if (btn) {
+            btn.className = `criteria-score-btn w-6 h-6 rounded-lg text-[10px] font-black transition ${c === scoreChar ? (c === 'K' ? 'bg-rose-600 text-white shadow-xs' : (c === 'B' ? 'bg-amber-500 text-white shadow-xs' : (c === 'T' ? 'bg-blue-600 text-white shadow-xs' : 'bg-emerald-600 text-white shadow-xs'))) : 'bg-slate-200 text-slate-600'}`;
+        }
+    });
+    showToast(`Baho belgilandi: ${code} ➔ ${scoreChar}`);
+}
+
+// Modal o'zgarishlarini saqlash
+function saveStudentDevModalChanges() {
+    const allStudents = getDevStudents();
+    const idx = allStudents.findIndex(s => s.id === currentEditingStudentId);
+    if (idx === -1) return;
+
+    const noteInput = document.getElementById('dev-modal-note-input');
+    if (noteInput) {
+        allStudents[idx].note = noteInput.value.trim();
+    }
+
+    saveDevStudents(allStudents);
+    closeModal('modal-student-dev-detail');
+    renderDevStudentsTable();
+    showToast(`✅ "${allStudents[idx].name}" rivojlanish kartasi muvaffaqiyatli saqlandi!`);
+}
+
+// 9. Rasmiy Blankni Chop Etish (Print Window)
+function printStudentPersonalMap() {
+    printStudentPersonalMapById(currentEditingStudentId);
+}
+
+function printStudentPersonalMapById(studentId) {
+    const allStudents = getDevStudents();
+    const s = allStudents.find(item => item.id === studentId);
+    if (!s) return;
+
+    const groupDef = DEV_AGE_GROUPS[s.ageGroup] || DEV_AGE_GROUPS['kichik'];
+    const avg = Math.round((s.jismoniy + s.ijtimoiy + s.nutq + s.bilish + s.ijodiy) / 5);
+
+    const printWin = window.open('', '_blank');
+    printWin.document.write(`
+        <!DOCTYPE html>
+        <html lang="uz">
+        <head>
+            <meta charset="UTF-8">
+            <title>57-DMTT - Bolaning Rivojlanish Xaritasi: ${s.name}</title>
+            <style>
+                body { font-family: 'Times New Roman', serif; padding: 25px; color: #111; line-height: 1.4; font-size: 13px; }
+                .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 15px; }
+                .header h3 { margin: 0 0 5px; font-size: 16px; text-transform: uppercase; }
+                .header p { margin: 2px 0; font-size: 13px; }
+                .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                .meta-table td { padding: 5px 8px; border: 1px solid #999; }
+                .score-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                .score-table th, .score-table td { border: 1px solid #333; padding: 6px; text-align: center; }
+                .score-table th { background: #f0f0f0; }
+                .signature-box { margin-top: 30px; display: flex; justify-content: space-between; font-weight: bold; }
+                @media print { button { display: none; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h3>O'zbekiston Respublikasi Maktabgacha va Maktab Ta'limi Vazirligi</h3>
+                <p><b>Farg'ona shahar 57-davlat maktabgacha ta'lim tashkiloti</b></p>
+                <h4 style="margin: 8px 0;">TARBIYALANUVCHINING SHAXSIY RIVOJLANISH XARITASI</h4>
+                <p><i>"Ilk qadam" davlat o'quv dasturi asosida</i></p>
+            </div>
+
+            <table class="meta-table">
+                <tr>
+                    <td style="width: 25%;"><b>Bolaning F.I.Sh:</b></td>
+                    <td style="width: 45%;"><b>${s.name}</b></td>
+                    <td style="width: 15%;"><b>Guruhi:</b></td>
+                    <td>${s.group} (${groupDef.badge})</td>
+                </tr>
+                <tr>
+                    <td><b>Tug'ilgan sanasi:</b></td>
+                    <td>01.05.2022</td>
+                    <td><b>O'quv yili:</b></td>
+                    <td>2025-2026</td>
+                </tr>
+                <tr>
+                    <td><b>Muassasa direktori:</b></td>
+                    <td>Raxmonova Dildora Abduxakimovna</td>
+                    <td><b>O'rtacha ball:</b></td>
+                    <td><b>${avg}% (Yuqori)</b></td>
+                </tr>
+            </table>
+
+            <h4 style="margin-bottom: 5px;">5 ta Asosiy Rivojlanish Sohalari Bo'yicha Natijalar:</h4>
+            <table class="score-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">№</th>
+                        <th style="text-align: left; width: 45%;">Rivojlanish Sohasi</th>
+                        <th>Sentabr (Dastlabki)</th>
+                        <th>Yanvar (Oraliq)</th>
+                        <th>May (Yakuniy)</th>
+                        <th>Xulosa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td style="text-align: left;">Jismoniy rivojlanish va sog'lom turmush tarzi</td>
+                        <td>${Math.round(s.jismoniy * 0.85)}%</td>
+                        <td><b>${s.jismoniy}%</b></td>
+                        <td>${Math.min(100, Math.round(s.jismoniy * 1.05))}%</td>
+                        <td>A'lo</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td style="text-align: left;">Ijtimoiy-hissiy rivojlanish</td>
+                        <td>${Math.round(s.ijtimoiy * 0.85)}%</td>
+                        <td><b>${s.ijtimoiy}%</b></td>
+                        <td>${Math.min(100, Math.round(s.ijtimoiy * 1.05))}%</td>
+                        <td>Ijobiy</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td style="text-align: left;">Nutq, muloqot, o'qish va yozish malakalari</td>
+                        <td>${Math.round(s.nutq * 0.85)}%</td>
+                        <td><b>${s.nutq}%</b></td>
+                        <td>${Math.min(100, Math.round(s.nutq * 1.05))}%</td>
+                        <td>Yuqori</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align: left;">Bilish jarayonining rivojlanishi</td>
+                        <td>${Math.round(s.bilish * 0.85)}%</td>
+                        <td><b>${s.bilish}%</b></td>
+                        <td>${Math.min(100, Math.round(s.bilish * 1.05))}%</td>
+                        <td>Yetakchi</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td style="text-align: left;">Ijodiy rivojlanish</td>
+                        <td>${Math.round(s.ijodiy * 0.85)}%</td>
+                        <td><b>${s.ijodiy}%</b></td>
+                        <td>${Math.min(100, Math.round(s.ijodiy * 1.05))}%</td>
+                        <td>Namunali</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 15px; padding: 10px; border: 1px solid #aaa; border-radius: 4px;">
+                <b>Pedagog xulosasi va tavsiyalari:</b>
+                <p style="margin: 5px 0;">${s.note || "Tarbiyalanuvchi yoshiga mos davlat talablarini to'liq va faol o'zlashtirmoqda. Kelgusida qobiliyatlarini muntazam qo'llab-quvvatlash tavsiya etiladi."}</p>
+            </div>
+
+            <div class="signature-box" style="margin-top: 40px;">
+                <div>
+                    Muassasa rahbari: __________________ Raxmonova D.A.<br><br>
+                    Guruh tarbiyachisi: __________________ (imzo)
+                </div>
+                <div style="text-align: right;">
+                    Metodist: __________________ Usmonova G.<br><br>
+                    M.O'. (Muhr o'rni) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sana: "${new Date().toLocaleDateString('uz-UZ')}"
+                </div>
+            </div>
+            <script>window.print();</script>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
+}
+
+// Butun guruh xaritasini chop etish
+function printCurrentDevMap() {
+    window.print();
+}
+
+// 10. Excel hisobot yuklash
+function exportDevMapExcel() {
+    const allStudents = getDevStudents();
+    const groupDef = DEV_AGE_GROUPS[currentDevAgeTab];
+    let filtered = allStudents.filter(s => {
+        if (currentDevAgeTab === 'maktabga') return s.ageGroup === 'tayyorlov';
+        return s.ageGroup === currentDevAgeTab;
+    });
+
+    if (currentDevGroupFilter !== 'all') {
+        filtered = filtered.filter(s => s.group === currentDevGroupFilter);
+    }
+
+    let csvContent = "\uFEFF"; // UTF-8 BOM
+    csvContent += "№;Tarbiyalanuvchi F.I.Sh;Guruhi;Yosh toifasi;Jismoniy (%);Ijtimoiy (%);Nutq (%);Bilish (%);Ijodiy (%);O'rtacha (%);Darajasi;Pedagog tavsiyasi\n";
+
+    filtered.forEach((s, idx) => {
+        const avg = Math.round((s.jismoniy + s.ijtimoiy + s.nutq + s.bilish + s.ijodiy) / 5);
+        const level = avg >= 75 ? "Yuqori" : (avg >= 60 ? "O'rta" : "Boshlang'ich");
+        csvContent += `${idx + 1};"${s.name}";"${s.group}";"${groupDef.badge}";${s.jismoniy};${s.ijtimoiy};${s.nutq};${s.bilish};${s.ijodiy};${avg};"${level}";"${s.note || ''}"\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `57_DMTT_Rivojlanish_Xaritasi_${currentDevAgeTab}_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(`📥 ${groupDef.title} rivojlanish xaritasi Excel (CSV) formatida yuklab olindi!`);
+}
+
+
+// ============================================================================
+// MOSLASHUVCHANLIK VA RETRO-KOMPATIBILLIK FUNKSIYALARI
+// ============================================================================
+function renderDevelopmentMap(filterGroup = 'all', period = 'yanvar') {
+    if (filterGroup && filterGroup !== 'all') {
+        currentDevGroupFilter = filterGroup;
+    }
+    if (period) currentDevPeriod = period;
+    renderDevelopmentSection();
+}
+
+function viewStudentDevDetail(studentId) {
+    openStudentDevModal(studentId);
+}
+
+function filterDevArea(areaKey) {
+    showToast("рџ“Љ '" + areaKey.toUpperCase() + "' sohasi bo'yicha ko'rsatkichlar ajratildi");
+    filterDevDomain(areaKey);
+}
+
+function filterDevGroup(groupName) {
+    filterDevAgeGroup(groupName);
+}
+// ============================================================================
+// BANNER SIFATI VA KO''RINISHINI BOSHQARISH FUNKSIYALARI
+// ============================================================================
+let currentBannerMode = 'ai'; // 'ai' yoki 'original'
+let isBannerVisible = true;
+
+function switchBannerSource(mode) {
+    const bannerImg = document.getElementById('section-hero-banner-img');
+    if (!bannerImg) return;
+    
+    currentBannerMode = mode;
+    bannerImg.style.opacity = '0.2';
+    
+    setTimeout(() => {
+        if (mode === 'ai') {
+            bannerImg.src = 'assets/banner_dmtt_hd_ai.jpg';
+            showToast("вњЁ Tiniq Ultra HD formatdagi banner o'rnatildi!");
+        } else {
+            bannerImg.src = 'assets/banner_dmtt_main.png';
+            showToast("рџ–јпёЏ Asl rasmiy banner ko'rinishiga o'tildi");
+        }
+        bannerImg.style.opacity = '1';
+    }, 150);
+}
+
+function toggleBannerVisibility() {
+    const box = document.getElementById('hero-banner-main-box');
+    const btn = document.getElementById('btn-toggle-banner-visibility');
+    if (!box) return;
+
+    isBannerVisible = !isBannerVisible;
+    if (!isBannerVisible) {
+        box.classList.add('hidden');
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-eye text-emerald-400"></i> <span class="hidden sm:inline">Bannerni ko\'rsatish</span>';
+        showToast("рџ‘ЃпёЏ Banner yashirildi (Kompakt rejim)");
+    } else {
+        box.classList.remove('hidden');
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-eye-slash text-rose-400"></i> <span class="hidden sm:inline">Yashirish</span>';
+        showToast("рџ‘ЃпёЏ Banner qayta ko'rsatildi");
+    }
+}

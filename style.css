@@ -1,0 +1,822 @@
+﻿/* Mening Bog'cham — 57-DMTT Maxsus Stilleri */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --sidebar-bg: #0f172a;
+    --sidebar-hover: #1e293b;
+    --sidebar-active: #2563eb;
+    --card-border: #e2e8f0;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #f1f5f9;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Sidebar navigation */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+    font-size: 13.5px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+}
+.nav-link:hover {
+    background: #1e293b;
+    color: #f8fafc;
+}
+.nav-link.active {
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+/* Card Styling */
+.dashboard-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.dashboard-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07);
+}
+
+/* Stat KPI Cards */
+.kpi-card {
+    border-radius: 16px;
+    padding: 18px 20px;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 105px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+.kpi-card-blue {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+.kpi-card-green {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+.kpi-card-orange {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+.kpi-card-purple {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+}
+.kpi-card-red {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* Badges & Pills */
+.badge-active {
+    background-color: #dcfce7;
+    color: #15803d;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.btn-status-keldi {
+    background-color: #10b981;
+    color: #ffffff;
+    padding: 5px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.btn-status-keldi:hover {
+    background-color: #059669;
+}
+.btn-status-kelmadi {
+    background-color: #ef4444;
+    color: #ffffff;
+    padding: 5px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.btn-status-kelmadi:hover {
+    background-color: #dc2626;
+}
+
+/* Group Mini Cards */
+.group-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.group-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
+}
+.group-card-img {
+    height: 85px;
+    width: 100%;
+    object-fit: cover;
+}
+
+/* Meal Food Cards */
+.meal-card {
+    background: #f8fafc;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.meal-card-img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+/* SMARTPHONE MOCKUPS (Ota-ona kabineti) */
+.phone-mockup {
+    width: 185px;
+    height: 380px;
+    background: #ffffff;
+    border-radius: 32px;
+    border: 6px solid #1e293b;
+    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.25);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+.phone-notch {
+    width: 60px;
+    height: 12px;
+    background: #1e293b;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+.phone-notch::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #334155;
+}
+.phone-home-indicator {
+    width: 48px;
+    height: 3px;
+    background: #94a3b8;
+    border-radius: 999px;
+    margin: 4px auto 6px;
+}
+.phone-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 10px;
+    font-size: 11px;
+}
+.phone-content::-webkit-scrollbar {
+    display: none;
+}
+
+/* Action Buttons */
+.btn-primary-purple {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25);
+}
+.btn-primary-purple:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+}
+
+.btn-tab {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    transition: all 0.15s;
+}
+.btn-tab.active {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+/* Modals */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-box {
+    background: #ffffff;
+    border-radius: 20px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalPop {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* ========================================================================= */
+/* LOGIN SCREEN & AUTH STYLES */
+/* ========================================================================= */
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: radial-gradient(circle at 20% 20%, #1e293b 0%, #0f172a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+}
+.login-card {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 28px;
+    box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2);
+    width: 100%;
+    max-width: 520px;
+    overflow: hidden;
+    position: relative;
+    animation: loginFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes loginFadeIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Quick User Role Pills */
+.role-chip {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.role-chip:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+/* ========================================================================= */
+/* FACEID BIOMETRIC SCANNER STYLES */
+/* ========================================================================= */
+.face-scanner-viewport {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    background: #090d16;
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #1e293b;
+}
+.face-scanner-viewport video,
+.face-scanner-viewport canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.face-scanner-hud {
+    position: absolute;
+    inset: 20px;
+    border: 2px dashed rgba(16, 185, 129, 0.4);
+    border-radius: 24px;
+    pointer-events: none;
+    box-shadow: inset 0 0 30px rgba(16, 185, 129, 0.1);
+}
+.face-scanner-hud::before,
+.face-scanner-hud::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-color: #10b981;
+    border-style: solid;
+}
+.face-scanner-hud::before {
+    top: -2px;
+    left: -2px;
+    border-width: 4px 0 0 4px;
+    border-top-left-radius: 12px;
+}
+.face-scanner-hud::after {
+    bottom: -2px;
+    right: -2px;
+    border-width: 0 4px 4px 0;
+    border-bottom-right-radius: 12px;
+}
+.scan-laser {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #10b981, #34d399, transparent);
+    box-shadow: 0 0 15px #10b981, 0 0 30px #34d399;
+    animation: scanAnimation 2.2s infinite ease-in-out;
+}
+@keyframes scanAnimation {
+    0% { top: 15%; opacity: 0.3; }
+    50% { top: 85%; opacity: 1; }
+    100% { top: 15%; opacity: 0.3; }
+}
+
+/* FaceID Success Flash */
+.scan-success-pulse {
+    animation: successPulse 0.6s ease-out;
+}
+@keyframes successPulse {
+    0% { border-color: #10b981; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Role Badges */
+.badge-role-director { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+.badge-role-deputy { background: #f5f3ff; color: #6b21a8; border: 1px solid #ddd6fe; }
+.badge-role-nurse { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.badge-role-warehouse { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+.badge-role-teacher { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
+/* ========================================================================= */
+/* ASOSIY ORQA FON (2-RASM) VA BANNER USLUBLARI */
+/* ========================================================================= */
+.portal-main-bg {
+    background-image: url('assets/main_bg.jpg');
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: 100% auto;
+    background-attachment: fixed;
+    background-color: #f0f7ff;
+}
+
+@media (max-width: 1024px) {
+    .portal-main-bg {
+        background-size: cover;
+    }
+}
+
+/* Crystal-Clear HD Banner & Footer Image Styling */
+.hd-banner-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 420px;
+    object-fit: contain;
+    background-color: #ffffff;
+    transition: opacity 0.25s ease-in-out, transform 0.25s ease;
+}
+
+.hd-footer-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 380px;
+    object-fit: contain;
+    background-color: #074684;
+}
+
+/* Interactive Banner Cards (Yozuvlar va menyular faol tugmalar) */
+.banner-interactive-card {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    text-align: left;
+}
+.banner-interactive-card:hover {
+    transform: translateY(-2px);
+    border-color: #3b82f6;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+}
+.banner-interactive-card.active {
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    border-color: #1d4ed8;
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+}
+.banner-interactive-card.active p,
+.banner-interactive-card.active span,
+.banner-interactive-card.active i {
+    color: #ffffff !important;
+}
+
+.hero-pill-badge {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 9999px;
+    padding: 10px 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transition: all 0.25s ease;
+}
+.hero-pill-badge:hover {
+    transform: translateY(-3px);
+    background: #ffffff;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15);
+}
+
+.footer-main-dark {
+    background-color: #074684;
+    color: #ffffff;
+}
+
+.footer-sub-bottom {
+    background-color: #032448;
+    color: #94a3b8;
+}
+
+
+
+
+
+/* ========================================================================== */
+/* GLASSMORPHISM & DYNAMIC HOVER MICRO-INTERACTIONS */
+/* ========================================================================== */
+
+/* Modern Frosted Glass Containers */
+.glass-card {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05) !important;
+}
+
+.glass-card-dark {
+    background: rgba(15, 23, 42, 0.88) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Upgraded KPI Cards with True Glassmorphism */
+.kpi-card {
+    border-radius: 20px !important;
+    padding: 20px 22px !important;
+    color: #ffffff !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    min-height: 112px !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.38) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-25deg);
+    transition: all 0.75s ease;
+    pointer-events: none;
+}
+.kpi-card:hover::before {
+    left: 125%;
+}
+.kpi-card:hover {
+    transform: scale(1.045) translateY(-5px) !important;
+    box-shadow: 0 20px 38px -5px rgba(0, 0, 0, 0.2), 0 12px 18px -5px rgba(0, 0, 0, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.75) !important;
+    opacity: 0.98 !important;
+}
+
+.kpi-card-blue {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.88) 0%, rgba(29, 78, 216, 0.92) 100%) !important;
+}
+.kpi-card-green {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.88) 0%, rgba(5, 150, 105, 0.92) 100%) !important;
+}
+.kpi-card-orange {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.88) 0%, rgba(234, 88, 12, 0.92) 100%) !important;
+}
+.kpi-card-purple {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.88) 0%, rgba(109, 40, 217, 0.92) 100%) !important;
+}
+.kpi-card-red {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.88) 0%, rgba(220, 38, 38, 0.92) 100%) !important;
+}
+
+/* Body Dashboard Cards Glassy Effect & Hover Scale */
+.dashboard-card {
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.05), 0 4px 6px -2px rgba(15, 23, 42, 0.03) !important;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.dashboard-card:hover {
+    transform: scale(1.02) translateY(-4px) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    box-shadow: 0 18px 36px -6px rgba(15, 23, 42, 0.1), 0 8px 16px -4px rgba(15, 23, 42, 0.06) !important;
+    border-color: rgba(59, 130, 246, 0.35) !important;
+}
+
+/* Universal Hover Scale & Translucency micro-interaction */
+.hover-glass-scale {
+    transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.hover-glass-scale:hover {
+    transform: scale(1.025) translateY(-2px) !important;
+    box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* Nav Link Hover Scale */
+.nav-link {
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.nav-link:hover {
+    transform: scale(1.03) translateX(4px) !important;
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #60a5fa !important;
+}
+
+/* Pill / Chip Hover */
+.role-chip {
+    transition: all 0.2s ease !important;
+}
+.role-chip:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Crisp Typography and High-Contrast Data */
+.crisp-data-title {
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    color: #0f172a;
+}
+.crisp-badge {
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+/* Enhanced HD Banner Image Styling */
+.hd-banner-image {
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: high-quality !important;
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 440px;
+    object-fit: cover;
+    object-position: center;
+    background-color: #0f172a;
+    transition: opacity 0.25s ease-in-out, transform 0.25s ease;
+}
+
+/* ========================================================================== */
+/* SHISHSIMON (GLASSMORPHIC) ASOSIY MENYU VA BO''LIMLAR STILLARI */
+/* ========================================================================== */
+
+/* Body Background with Soft Subtle Mesh for Pure Glass Reflection */
+body {
+    background: linear-gradient(135deg, #eef5fc 0%, #e1effe 50%, #f3f8fe 100%) !important;
+    background-attachment: fixed !important;
+}
+
+/* Asosiy Navbar Header Glass */
+header {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06) !important;
+}
+
+/* Banner Ostidagi Asosiy Bo''limlar Paneli (Shishsimon Fon) */
+#dynamic-banner-wrapper {
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.03) !important;
+}
+
+/* Asosiy Menyudagi Shishsimon Bo''lim Tugmalari (Header) */
+.header-glass-nav-btn {
+    background: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.02) !important;
+    transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.header-glass-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.95) !important;
+    transform: scale(1.05) translateY(-2px) !important;
+    box-shadow: 0 10px 22px rgba(59, 130, 246, 0.14) !important;
+    border-color: rgba(59, 130, 246, 0.45) !important;
+}
+
+/* Banner Interaktiv Bo''lim Kartalari - Oq Fon O''rniga Shishsimon Fon */
+.banner-interactive-card {
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+    border-radius: 18px !important;
+    padding: 12px 16px !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04) !important;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.banner-interactive-card:hover {
+    transform: scale(1.045) translateY(-4px) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    box-shadow: 0 18px 36px rgba(59, 130, 246, 0.16) !important;
+}
+.banner-interactive-card.active {
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.92), rgba(37, 99, 235, 0.92)) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35) !important;
+}
+
+/* Sidebar Shishsimon Elementlar */
+#main-sidebar {
+    background: rgba(15, 23, 42, 0.92) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25) !important;
+}
+
+
+/* ============================================================================ */
+/* SARIQ LENTA: CHEKSIZ YUGURUVCHI SATR (YELLOW TICKER / MARQUEE RIBBON) */
+/* ============================================================================ */
+@keyframes yellowRibbonMarquee {
+    0% {
+        transform: translate3d(-50%, 0, 0);
+    }
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.yellow-ribbon-container {
+    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 25%, #fde047 50%, #fbbf24 75%, #f59e0b 100%);
+    border-bottom: 2px solid #d97706;
+    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.2);
+    color: #451a03;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+    z-index: 50;
+}
+
+.yellow-ribbon-track {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: yellowRibbonMarquee 32s linear infinite;
+    will-change: transform;
+}
+
+.yellow-ribbon-track:hover {
+    animation-play-state: paused;
+}
+
+.yellow-ribbon-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    color: #451a03;
+}
+
+.yellow-ribbon-separator {
+    color: #b45309;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    opacity: 0.8;
+}
