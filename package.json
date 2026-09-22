@@ -1,0 +1,26 @@
+﻿{
+  "name": "dmtt-57-fargona",
+  "version": "1.0.0",
+  "description": "Farg'ona shahar 57-DMTT 'Mening Bog'cham' elektron boshqaruv va pedagogik monitoring platformasi",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": [
+    "dmtt",
+    "bogcha",
+    "maktabgacha-talim",
+    "fargona",
+    "pedagogik-monitoring"
+  ],
+  "author": "57-DMTT",
+  "license": "ISC",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
